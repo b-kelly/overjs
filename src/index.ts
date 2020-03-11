@@ -1,3 +1,2 @@
-export function init() {
-    console.log('Hello world!');
-}
+export {Application} from './application';
+export {Controller} from './controller';
