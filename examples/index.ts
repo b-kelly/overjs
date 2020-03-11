@@ -1,5 +1,9 @@
-import * as over from '../src/index';
+import {Application} from '../src/index';
+import { SampleController } from './controllers/sample';
 
-over.init();
+var app = new Application();
+app.register(SampleController);
+
+app.start();
 
 console.log('hello docs!');
