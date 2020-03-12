@@ -24,6 +24,7 @@ export class ModalController extends Controller {
     static bindings = {
         show: ['click', ModalController.show] as Binding,
         hide: ['click', ModalController.hide] as Binding
+        // TODO we also want to bind some to document on show as well! 
     };
 
     connect() {
