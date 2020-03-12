@@ -1,13 +1,7 @@
-import { Controller } from "./controller";
+import { Controller, BindingMap, Binding } from "./controller";
 
 export class Application {
-
-    /**
-     * Contains a mapping of all registered controllers
-     */
-    private registeredControllers = new Map<string, typeof Controller>();
-
-    private controllerInstances: Controller[] = [];
+    private controllerHandlers = new Map<string, ControllerManager>();
 
     start() {
         this.domReady(e => {
@@ -16,7 +10,14 @@ export class Application {
     }
 
     register(controller: typeof Controller) {
-        this.registeredControllers.set(controller.name, controller);
+        // changes a controller from "TestSampleController" to "test-sample"
+        var simplifiedName = controller.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase().replace(/-?controller$/, '').trim();
+
+        if (!simplifiedName) {
+            throw 'Unable to initialize controller with bad name: ' + controller.name;
+        }
+
+        this.controllerHandlers.set(simplifiedName, new ControllerManager(controller));
     }
 
     /**
@@ -35,18 +36,15 @@ export class Application {
     private enhance(el: HTMLElement) {
         let controllerName = el.getAttribute('ov');
 
-        if (!this.registeredControllers.has(controllerName)) {
+        if (!this.controllerHandlers.has(controllerName)) {
             // TODO should we throw/log here?
             return;
         }
 
-        let controller = this.registeredControllers.get(controllerName);
+        let handler = this.controllerHandlers.get(controllerName);
 
-        let instance = new controller(el);
-
-        // TODO start/hookup the instance lifecycle
-
-        this.controllerInstances.push(instance);
+        // tell the handler to hook up a new instance of the controller to this element
+        handler.construct(el);
     }
 
     /**
@@ -60,5 +58,93 @@ export class Application {
         else {
             callback(null);
         }
+    }
+}
+
+class ControllerManager {
+    private controllerType: typeof Controller;
+    private instances: { controller: Controller, bindings: InternalBindingMap }[] = [];
+
+    constructor(type: typeof Controller) {
+        this.controllerType = type;
+    }
+
+    construct(el: HTMLElement) {
+        let controller = new this.controllerType(el);
+        let instance = {
+            controller: controller,
+            bindings: new InternalBindingMap(controller, this.controllerType.bindings)
+        };
+
+        this.instances.push(instance);
+
+        controller.construct();
+
+        // TODO fire when connected to the dom
+        controller.connect();
+
+        // TODO also fire on dom change
+        this.bindTargetEvents(instance.controller, instance.bindings);
+    }
+
+    /**
+     * binds all targets
+     * TODO needs to bind targets selectively on mutation
+     */
+    private bindTargetEvents(controller: Controller, bindings: InternalBindingMap) {
+        // TODO get targets that were mutated
+        let targets = controller.baseElement.querySelectorAll<HTMLElement>('[ov-target]');
+
+        if (!targets.length) {
+            return;
+        }
+
+        // bind each targets' event to the bound function
+        targets.forEach((t: HTMLElement) => {
+            let target = t.getAttribute('ov-target');
+            let binding = bindings.get(target);
+
+            if (!binding) {
+                return;
+            }
+
+            t.addEventListener(binding[0], binding[1]);
+        });
+    }
+
+    private unbindTargets(controller: Controller, bindings: InternalBindingMap) {
+        controller.baseElement.querySelectorAll<HTMLElement>('[ov-target]').forEach(t => {
+            let target = t.getAttribute('ov-target');
+            let binding = bindings.get(target);
+
+            t.removeEventListener(binding[0], binding[1]);
+        });
+    }
+}
+
+class InternalBindingMap {
+    private targets: BindingMap = {};
+
+    constructor(caller: Controller, bindings: BindingMap) {
+        this.bind(caller, bindings);
+    }
+
+    /**
+     * TODO document
+     */
+    private bind(caller: Controller, bindings: BindingMap) {
+        Object.keys(bindings).forEach(k => {
+            var bindingSet = bindings[k];
+            // make sure the function call is bound to the caller so `this` is correct
+            this.targets[k] = [bindingSet[0], bindingSet[1].bind(caller)];
+        });
+    }
+
+    /**
+     * TODO document
+     * @param target
+     */
+    get(target: string): Binding {
+        return this.targets[target];
     }
 }
