@@ -95,7 +95,7 @@ export class Application {
     }
 
     private handleAttributeChange(node: Node) {
-
+        // TODO
     }
 
     /**
