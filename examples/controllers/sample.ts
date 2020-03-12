@@ -1,6 +1,10 @@
 import { Controller } from "../../src/index";
 
-export class SampleController extends Controller {
+export let sample = `
+<div ov="test-sample"></div>
+`;
+
+export class TestSampleController extends Controller {
     constructor(el: HTMLElement) {
         super(el);
 

@@ -1,8 +1,10 @@
 import {Application} from '../src/index';
-import { SampleController } from './controllers/sample';
+import { TestSampleController } from './controllers/sample';
+import { ControllerListController } from './controllers/controllerList';
 
 var app = new Application();
-app.register(SampleController);
+app.register(TestSampleController);
+app.register(ControllerListController);
 
 app.start();
 
