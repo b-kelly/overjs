@@ -2,8 +2,10 @@ import { Controller } from "../../src/index";
 import { TestSampleController, sample as TestSampleSample } from "./sample";
 import { Binding } from "../../src/controller";
 
+type Mapping = [typeof Controller, string];
+
 const types = new Map([
-    [TestSampleController, TestSampleSample]
+    [TestSampleController.name, [TestSampleController, TestSampleSample] as Mapping]
 ]);
 
 export class ControllerListController extends Controller {
@@ -11,29 +13,26 @@ export class ControllerListController extends Controller {
         'template':  ['click', ControllerListController.logOnClick] as Binding //TODO need to get rid of `as Binding`, get rid of prefix
     };
 
-    private test = Math.random();
-
-    construct() {
-        this.baseElement.innerHTML = this.generateList();
+    connect() {
+        this.baseElement.innerHTML = `
+            ${this.generateList()}
+            <div ov-target="demo"></div>
+        `;
     }
 
     private generateList() {
         return `
         <ul>
-            ${Array.from(types).map(i => this.generateItem(i[0])).join()}
+            ${Array.from(types).map(i => `<li><a href="#" ov-target="template">${i[1][0].name}</a></li>`).join()}
         </ul>
         `;
     }
 
-    private generateItem(item: typeof Controller) {
-        return `<li><a href="#" ov-target="template">${item.name}</a></li>`;
-    }
-
     private static logOnClick(this: ControllerListController, e: Event) { //TODO get rid of 'this:'?
-        e.stopPropagation();
-        e.preventDefault();
+        var controller = (<HTMLElement>e.target).textContent;
+        var mapping = types.get(controller);
 
-        console.log(this.test);
-        return false;
+        var container = this.target('demo');
+        container.innerHTML = mapping[1];
     }
 }
