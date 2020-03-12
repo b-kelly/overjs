@@ -8,4 +8,8 @@ app.register(ControllerListController);
 
 app.start();
 
+document.querySelector('.js-disconnect-all').addEventListener('click', (e) => {
+    app.destroy();
+});
+
 console.log('hello docs!');
