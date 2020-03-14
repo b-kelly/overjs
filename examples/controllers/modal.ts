@@ -1,4 +1,4 @@
-import { Controller, Application } from "../../src/index";
+import { Controller } from "../../src/index";
 import { Binding } from "../../src/controller";
 
 export let sample = `
