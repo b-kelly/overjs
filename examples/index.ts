@@ -10,6 +10,10 @@ app.register(ModalController);
 
 app.start();
 
+//TODO expose better
+// @ts-ignore;
+window.helpers = app.helpers;
+
 document.querySelector('.js-disconnect-all').addEventListener('click', (e) => {
     app.destroy();
 });
