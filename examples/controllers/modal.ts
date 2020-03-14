@@ -1,4 +1,4 @@
-import { Controller } from "../../src/index";
+import { Controller, Application } from "../../src/index";
 import { Binding } from "../../src/controller";
 
 export let sample = `
@@ -28,14 +28,157 @@ export class ModalController extends Controller {
     };
 
     connect() {
-        console.log('modal connected');
+        this.validate();
+    }
+
+    disconnect() {
+        this.unbindHideEvents();
+    }
+
+    private validate() {
+        //TODO
+    }
+
+    private toggle(show?: boolean | undefined) {
+        let toShow = show;
+        let modal = this.target('modal');
+        let isVisible = modal.getAttribute('aria-hidden') === 'false';
+
+        // if we're letting the class toggle, we need to figure out if the popover is visible manually
+        if (typeof toShow === "undefined") {
+            toShow = !isVisible;
+        }
+
+        // if the state matches the disired state, return without changing anything
+        if ((toShow && isVisible) || (!toShow && !isVisible)) {
+            return;
+        }
+
+        let returnElement = <HTMLElement>this.target('returnElement');
+
+        // show/hide events trigger before toggling the class
+        var triggeredEvent = this.triggerEvent(toShow ? "show" : "hide", { returnElement: returnElement });
+
+        // if this pre-show/hide event was prevented, don't attempt to continue changing the modal state
+        if (triggeredEvent.defaultPrevented) {
+            return;
+        }
+
+        returnElement = triggeredEvent.detail.returnElement;
+        modal.setAttribute("aria-hidden", toShow ? "false" : "true");
+
+        if (toShow) {
+            this.bindHideEvents();
+        }
+        else {
+            this.unbindHideEvents();
+            this.focusReturnElement(returnElement);
+            this.removeModalOnHide();
+        }
+
+        // check for transitionend support
+        var supportsTransitionEnd = (<HTMLElement>modal).ontransitionend !== undefined;
+
+        // shown/hidden events trigger after toggling the class
+        if (supportsTransitionEnd) {
+            // wait until after the modal finishes transitioning to fire the event
+            modal.addEventListener("transitionend", () => {
+                //TODO this is firing waaay to soon?
+                this.triggerEvent(toShow ? "shown" : "hidden");
+            }, { once: true });
+        } else {
+            this.triggerEvent(toShow ? "shown" : "hidden");
+        } 
+    }
+
+    private bindHideEvents() {
+        this.bindDocumentEvent('keyup', 'hideOnEsc', this.hideOnEsc);
+        this.bindDocumentEvent('click', 'hideOnOutsideClick', this.hideOnOutsideClick);
+    }
+
+    private unbindHideEvents() {
+        this.unbindDocumentEvent('keyup', 'hideOnEsc');
+        this.unbindDocumentEvent('click', 'hideOnOutsideClick');
+    }
+
+    private focusReturnElement(returnElement: HTMLElement) {
+        if (!returnElement) {
+            return;
+        }
+
+        let modal = this.target('modal');
+
+        //TODO prefix event
+        modal.addEventListener("modal:hidden", () => {
+            // double check the element still exists when the event is called
+            if (returnElement && document.body.contains(returnElement)) {
+                returnElement.focus();
+            }
+        }, {once: true });
+    }
+
+    private removeModalOnHide() {
+        if (this.data.removeWhenHidden !== "true") {
+            return;
+        }
+
+        let modal = this.target('modal');
+
+        //TODO prefix event
+        modal.addEventListener("modal:hidden", () => {
+            this.baseElement.remove();
+        }, {once: true });
+    }
+
+    private hideOnOutsideClick(e: MouseEvent) {
+        let target = <Node>e.target;
+        let modal = this.target('modal');
+
+        if (!modal.querySelector('.s-modal--dialog')?.contains(target)) {
+            ModalController.hide.call(this, e);
+        }
+
+        return false;
+    }
+
+    private hideOnEsc(e: KeyboardEvent) {
+        if (e.key !== 'Escape') {
+            return true;
+        }
+
+        ModalController.hide.call(this, e);
+
+        return false;
     }
 
     static show(this: ModalController, e: Event) {
-        this.target('modal').setAttribute('aria-hidden', 'false');
+        this.toggle(true);
     }
 
     static hide(this: ModalController, e: Event) {
-        this.target('modal').setAttribute('aria-hidden', 'true');
+        this.toggle(false);
     }
+}
+
+export const helpers = {
+    showModal,
+    hideModal
+}
+
+function showModal(this: Application, element: HTMLElement) {
+    toggleModal(this, element, true);
+}
+
+function hideModal(this: Application, element: HTMLElement) {
+    toggleModal(this, element, false);
+}
+
+function toggleModal(app: Application, element: HTMLElement, show?: boolean | undefined) {
+    var controller: ModalController = app.getControllerForElement(element, 'modal') as ModalController;
+
+    if (!controller) {
+        throw 'Unable to get modal controller from element';
+    }
+
+    show ? ModalController.show.call(controller) : ModalController.hide.call(controller); //TODO static methods not terribly friendly
 }
