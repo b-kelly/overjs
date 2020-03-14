@@ -27,11 +27,11 @@ export class Controller {
     }
 
     protected target(target: string) {
-        return this.baseElement.querySelector(`[ov-target="${target}"]`);
+        return this.baseElement.querySelector<HTMLElement>(`[ov-target="${target}"]`);
     }
 
     protected targets(target: string) {
-        return this.baseElement.querySelectorAll(`[ov-target="${target}"]`);
+        return this.baseElement.querySelectorAll<HTMLElement>(`[ov-target="${target}"]`);
     }
 
     protected triggerEvent<T>(eventName: string, detail?: T, optionalElement?: Element) {
