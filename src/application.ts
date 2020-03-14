@@ -1,8 +1,9 @@
 import { Controller, BindingMap, Binding, HelperMap } from "./controller";
+import { Observer } from "./observer";
 
 export class Application {
     private controllerHandlers = new Map<string, ControllerManager>();
-    private observer: MutationObserver;
+    private observer: Observer;
     private registeredHelpers: { [name: string]: (element: HTMLElement, data?: any) => any } = {};
 
     get helpers() {
@@ -28,7 +29,7 @@ export class Application {
     }
 
     destroy() {
-        this.observer?.disconnect();
+        this.observer.disconnect();
         this.controllerHandlers.forEach(h => h.destroy());
         this.controllerHandlers.clear();
     }
@@ -52,74 +53,34 @@ export class Application {
     }
 
     /**
-     * TODO hooks up the dom; ideally this will add a mutation observer, but we're not there yet
+     * Hooks up the dom and watches it for changes
      */
     private hookup() {
-        this.observer = new MutationObserver(this.mutate.bind(this));
-
-        // observe the document for changes
-        this.observer.observe(document, {
-            attributes: true,
-            childList: true,
-            subtree: true
+        this.observer = new Observer(document.documentElement, {
+            additionDelegate: this.enhanceElement.bind(this),
+            removalDelegate: this.degradeElement.bind(this),
+            attributeChangeDelegate: null,
+            getApplicableElements: Application.getApplicableElements
         });
+        this.observer.connect();
 
         // go ahead and enhance the elements that are already on the page
-        // TODO should we use `ov="CONTROLLER"` or `data-controller="CONTROLLER"`?
-        document.querySelectorAll('[ov]').forEach((el: HTMLElement) => this.enhanceElement(el));
+        this.observer.refresh();
     }
 
-    private mutate(mutations: MutationRecord[], observer: MutationObserver) {
-        mutations.forEach(mutation => {
-            if (mutation.type === 'childList') {
-                // handle removes first since we could be replacing an element
-                this.handleRemovedElements(mutation.removedNodes);
-                this.handleAddedElements(mutation.addedNodes);
-            }
-            else if (mutation.type === 'attributes') {
-                this.handleAttributeChange(mutation.target);
-            }
-        });
-    }
-
-    private handleAddedElements(nodes: NodeList) {
-        nodes.forEach((n: HTMLElement) => {
-            this.handleAddedElement(n);
-        });
-    }
-
-    private handleAddedElement(n: HTMLElement) {
-        // we don't operate on text nodes, nothing to enhance!
-        if (n.nodeType === Node.TEXT_NODE) {
-            return;
-        }
-
-        this.enhanceElement(n);
-    }
-
-    private handleRemovedElements(nodes: NodeList) {
-        nodes.forEach((n: HTMLElement) => {
-            this.handleRemovedElement(n);
-        });
-    }
-
-    private handleRemovedElement(n: HTMLElement) {
-        // we don't operate on text nodes, nothing to enhance!
-        if (n.nodeType === Node.TEXT_NODE) {
-            return;
-        }
-
-        this.degradeElement(n);
-    }
-
-    private handleAttributeChange(node: Node) {
-        // TODO
+    private static getApplicableElements(element: HTMLElement) {
+        return element.querySelectorAll<HTMLElement>('[ov], :not([ov]) [ov-target]');
     }
 
     private enhanceElement(el: HTMLElement) {
+        // we don't operate on text nodes, nothing to enhance!
+        if (el.nodeType === Node.TEXT_NODE) {
+            return;
+        }
+
         var handler = this.getHandlerForElement(el);
 
-        if (!handler[0]) {
+        if (!handler || !handler[0]) {
             // TODO should we throw here?
             return;
         }
@@ -132,11 +93,8 @@ export class Application {
             handler[0].connectControllerChild(handler[1], el);
         }
         else {
-            let controllers = el.querySelectorAll<HTMLElement>('[ov]');
-            controllers.forEach(c => this.enhanceElement(c));
-
-            let targets = el.querySelectorAll<HTMLElement>(':not([ov]) [ov-target]');
-            targets.forEach(t => this.enhanceElement(t));
+            let elements = Application.getApplicableElements(el);
+            elements.forEach(e => this.enhanceElement(e));
         }
     }
 
@@ -145,6 +103,11 @@ export class Application {
      * @param el the element to degrade
      */
     private degradeElement(el: HTMLElement) {
+        // we don't operate on text nodes, nothing to enhance!
+        if (el.nodeType === Node.TEXT_NODE) {
+            return;
+        }
+
         var handler = this.getHandlerForElement(el);
 
         if (!handler[0]) {
@@ -159,11 +122,8 @@ export class Application {
             handler[0].disconnectControllerChild(handler[1], el);
         }
         else {
-            let controllers = el.querySelectorAll<HTMLElement>('[ov]');
-            controllers.forEach(c => this.degradeElement(c));
-
-            let targets = el.querySelectorAll<HTMLElement>(':not([ov]) [ov-target]');
-            targets.forEach(t => this.degradeElement(t));
+            let elements = Application.getApplicableElements(el);
+            elements.forEach(e => this.degradeElement(e));
         }
     }
 
