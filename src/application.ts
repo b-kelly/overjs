@@ -27,6 +27,10 @@ export class Application {
         this.controllerHandlers.clear();
     }
 
+    getControllerForElement(element: HTMLElement, controller: string) {
+        return this.controllerHandlers.get(controller).findInstanceForElement(element).controller;
+    }
+
     /**
      * TODO hooks up the dom; ideally this will add a mutation observer, but we're not there yet
      */
@@ -259,23 +263,23 @@ class ControllerManager {
         this.instances = [];
     }
 
-    private disconnectInstance(instance: ControllerInstance) {
-        this.unbindTargets(instance.controller, instance.bindings, instance.controller.baseElement);
-        instance.controller.disconnect();
-    }
-
-    private findInstanceForElement(baseElement: HTMLElement) {
+    findInstanceForElement(baseElement: HTMLElement) {
         let instance: ControllerInstance;
 
         // TODO we can do better than scanning every controller...
         for (let i of this.instances) {
-            if (i.controller.baseElement === baseElement) {
+            if (i.controller.baseElement.isEqualNode(baseElement)) {
                 instance = i;
                 break;
             }
         }
 
         return instance;
+    }
+
+    private disconnectInstance(instance: ControllerInstance) {
+        this.unbindTargets(instance.controller, instance.bindings, instance.controller.baseElement);
+        instance.controller.disconnect();
     }
 
     /**
