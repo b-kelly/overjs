@@ -66,7 +66,7 @@ export class Application {
 
         // go ahead and enhance the elements that are already on the page
         // TODO should we use `ov="CONTROLLER"` or `data-controller="CONTROLLER"`?
-        document.querySelectorAll('[ov]').forEach((el: HTMLElement) => this.enhance(el));
+        document.querySelectorAll('[ov]').forEach((el: HTMLElement) => this.enhanceElement(el));
     }
 
     private mutate(mutations: MutationRecord[], observer: MutationObserver) {
@@ -84,115 +84,105 @@ export class Application {
 
     private handleAddedElements(nodes: NodeList) {
         nodes.forEach((n: HTMLElement) => {
-            // we don't operate on text nodes, nothing to enhance!
-            if (n.nodeType === Node.TEXT_NODE) {
-                return;
-            }
-
-            // newly added controller! Enhance!
-            if (n.hasAttribute('ov')) {
-                this.enhance(n);
-            }
-            // hookup the target events
-            else {
-                this.enhanceChild(n);
-            }
+            this.handleAddedElement(n);
         });
+    }
+
+    private handleAddedElement(n: HTMLElement) {
+        // we don't operate on text nodes, nothing to enhance!
+        if (n.nodeType === Node.TEXT_NODE) {
+            return;
+        }
+
+        this.enhanceElement(n);
     }
 
     private handleRemovedElements(nodes: NodeList) {
         nodes.forEach((n: HTMLElement) => {
-            // we don't operate on text nodes, nothing to enhance!
-            if (n.nodeType === Node.TEXT_NODE) {
-                return;
-            }
-
-            // removed controller! Degrade!
-            if (n.hasAttribute('ov')) {
-                this.degrade(n);
-            }
-            // disconnect the target events
-            else {
-                this.degradeChild(n);
-            }
+            this.handleRemovedElement(n);
         });
+    }
+
+    private handleRemovedElement(n: HTMLElement) {
+        // we don't operate on text nodes, nothing to enhance!
+        if (n.nodeType === Node.TEXT_NODE) {
+            return;
+        }
+
+        this.degradeElement(n);
     }
 
     private handleAttributeChange(node: Node) {
         // TODO
     }
 
-    /**
-     * Progressively enhances an html element with its designated controller
-     * @param el the element to enhace; must have an attribute `ov="[CONTROLLER]"`
-     */
-    private enhance(el: HTMLElement) {
-        var handler = this.getHandlerForControllerElement(el);
+    private enhanceElement(el: HTMLElement) {
+        var handler = this.getHandlerForElement(el);
 
-        if (!handler) {
+        if (!handler[0]) {
             // TODO should we throw here?
             return;
         }
 
-        // tell the handler to hook up a new instance of the controller to this element
-        handler.construct(el);
-    }
-
-    private enhanceChild(el: HTMLElement) {
-        var handler = this.getHandlerForChildElement(el);
-
-        if (!handler) {
-            // TODO should we throw here?
-            return;
+        if (el.hasAttribute('ov')) {
+            // tell the handler to hook up a new instance of the controller to this element
+            handler[0].construct(el);
         }
+        else if (el.hasAttribute('ov-target')) {
+            handler[0].connectControllerChild(handler[1], el);
+        }
+        else {
+            let controllers = el.querySelectorAll<HTMLElement>('[ov]');
+            controllers.forEach(c => this.enhanceElement(c));
 
-        handler[0].connectControllerChild(handler[1], el);
+            let targets = el.querySelectorAll<HTMLElement>(':not([ov]) [ov-target]');
+            targets.forEach(t => this.enhanceElement(t));
+        }
     }
 
     /**
-     * Degrades an html element and disconnects its controller
-     * @param el the element to degrade; must have an attribute `ov="[CONTROLLER]"`
+     * Degrades an html element
+     * @param el the element to degrade
      */
-    private degrade(el: HTMLElement) {
-        var handler = this.getHandlerForControllerElement(el);
+    private degradeElement(el: HTMLElement) {
+        var handler = this.getHandlerForElement(el);
 
-        if (!handler) {
+        if (!handler[0]) {
             // TODO should we throw here?
             return;
         }
 
-        handler.disconnectElement(el);
-    }
-
-    private degradeChild(el: HTMLElement) {
-        var handler = this.getHandlerForChildElement(el);
-
-        if (!handler) {
-            // TODO should we throw here?
-            return;
+        if (el.hasAttribute('ov')) {
+            handler[0].disconnectElement(el);
         }
-
-        handler[0].disconnectControllerChild(handler[1], el);
-    }
-
-    private getHandlerForControllerElement(el: HTMLElement) {
-        let controllerName = el.getAttribute('ov');
-
-        if (!this.controllerHandlers.has(controllerName)) {
-            return null;
+        else if (el.hasAttribute('ov-target')) {
+            handler[0].disconnectControllerChild(handler[1], el);
         }
+        else {
+            let controllers = el.querySelectorAll<HTMLElement>('[ov]');
+            controllers.forEach(c => this.degradeElement(c));
 
-        return this.controllerHandlers.get(controllerName);
+            let targets = el.querySelectorAll<HTMLElement>(':not([ov]) [ov-target]');
+            targets.forEach(t => this.degradeElement(t));
+        }
     }
 
-    private getHandlerForChildElement(el: HTMLElement): [ControllerManager, HTMLElement] {
+    private getHandlerForElement(el: HTMLElement): [ControllerManager, HTMLElement] {
         let parentController = el.closest('[ov]') as HTMLElement;
         if (!parentController) {
             // TODO should we throw?
             return null;
         }
 
-        return [this.getHandlerForControllerElement(parentController), parentController];
+        let controllerName = parentController.getAttribute('ov');
+
+        if (!this.controllerHandlers.has(controllerName)) {
+            return null;
+        }
+
+        let controller = this.controllerHandlers.get(controllerName);
+
+        return [controller, parentController];
     }
 
     /**
