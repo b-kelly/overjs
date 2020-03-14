@@ -66,7 +66,7 @@ export class ModalController extends Controller {
         let returnElement = <HTMLElement>this.target('returnElement');
 
         // show/hide events trigger before toggling the class
-        var triggeredEvent = this.triggerEvent(toShow ? "show" : "hide", { returnElement: returnElement });
+        var triggeredEvent = this.triggerEvent(toShow ? "show" : "hide", { returnElement: returnElement }, modal);
 
         // if this pre-show/hide event was prevented, don't attempt to continue changing the modal state
         if (triggeredEvent.defaultPrevented) {
@@ -93,21 +93,23 @@ export class ModalController extends Controller {
             // wait until after the modal finishes transitioning to fire the event
             modal.addEventListener("transitionend", () => {
                 //TODO this is firing waaay to soon?
-                this.triggerEvent(toShow ? "shown" : "hidden");
+                this.triggerEvent(toShow ? "shown" : "hidden", null, modal);
             }, { once: true });
         } else {
-            this.triggerEvent(toShow ? "shown" : "hidden");
+            this.triggerEvent(toShow ? "shown" : "hidden", null, modal);
         } 
     }
 
     private bindHideEvents() {
         this.bindDocumentEvent('keyup', 'hideOnEsc', this.hideOnEsc);
         this.bindDocumentEvent('click', 'hideOnOutsideClick', this.hideOnOutsideClick);
+        this.handleFocusableElements();
     }
 
     private unbindHideEvents() {
         this.unbindDocumentEvent('keyup', 'hideOnEsc');
         this.unbindDocumentEvent('click', 'hideOnOutsideClick');
+        this.unbindDocumentEvent('keydown', 'trapTab');
     }
 
     private focusReturnElement(returnElement: HTMLElement) {
@@ -158,6 +160,59 @@ export class ModalController extends Controller {
         ModalController.hide.call(this, e);
 
         return false;
+    }
+
+    private handleFocusableElements() {
+        let modal = this.target('modal');
+
+        // get all tabbable items
+        var allTabbables = Array.from(modal.querySelectorAll<HTMLElement>("[href], input, select, textarea, button, [tabindex]"))
+            .filter((el: Element) => el.matches(":not([disabled]):not([tabindex='-1'])"));
+
+        if (!allTabbables.length) {
+            return;
+        }
+
+        var initialFocus = allTabbables[0];
+
+        var intialFocusTarget = this.target('initialFocus');
+        if (intialFocusTarget) {
+            initialFocus = intialFocusTarget;
+        }
+
+        // focus on the first focusable item within the modal
+        modal.addEventListener("modal:shown", () => {
+            // double check the element still exists when the event is called
+            if (initialFocus && document.body.contains(initialFocus)) {
+                initialFocus.focus()
+            }
+        }, {once: true });
+
+        var firstTabbable = <HTMLElement>allTabbables[0];
+        var lastTabbable = <HTMLElement>allTabbables[allTabbables.length - 1];
+
+        // if the first or last item is tabbed over, ensure that the focus "loops" back to the end of the array instead of leaving the modal
+        this.bindDocumentEvent('keydown', 'trapTab', (e: KeyboardEvent) => {  
+            // if somehow the user has tabbed out of the modal or if focus started outside the modal, push them to the first item
+            if (!modal.contains(<Element>e.target)) {
+                e.preventDefault();
+                firstTabbable.focus();
+            }
+    
+            // if they've tabbed backwards over the first item, then go to the last item
+            if (e.target == firstTabbable && e.keyCode === 9 && e.shiftKey) {
+                e.preventDefault();
+                lastTabbable.focus();
+            }
+    
+            // if they've tabbed forwards over the last item, then go to the first item
+            if (e.target == lastTabbable && e.keyCode === 9 && !e.shiftKey) {
+                e.preventDefault();
+                firstTabbable.focus();
+            }
+        });
+
+        return initialFocus;
     }
 
     static show(this: ModalController, e: Event) {
