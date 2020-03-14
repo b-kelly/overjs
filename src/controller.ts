@@ -1,7 +1,9 @@
 export class Controller {
     static bindings: BindingMap = {};
+    static helpers: HelperMap = {};
     
     baseElement: HTMLElement;
+
     protected boundMethods: {[key: string]: EventListener } = { };
 
     constructor(el: HTMLElement) {
@@ -71,7 +73,13 @@ export class Controller {
     }
 }
 
+export type Helper = (instance: Controller, data?: any) => any;
+
 export type Binding = [keyof HTMLElementEventMap, EventListener];
+
+export interface HelperMap {
+    [key: string]: Helper
+}
 
 export interface BindingMap {
     [key: string]: Binding

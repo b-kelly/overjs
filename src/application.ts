@@ -1,8 +1,13 @@
-import { Controller, BindingMap, Binding } from "./controller";
+import { Controller, BindingMap, Binding, HelperMap } from "./controller";
 
 export class Application {
     private controllerHandlers = new Map<string, ControllerManager>();
     private observer: MutationObserver;
+    private registeredHelpers: { [name: string]: (element: HTMLElement, data?: any) => any } = {};
+
+    get helpers() {
+        return { ...this.registeredHelpers };
+    }
 
     start() {
         this.domReady(e => {
@@ -19,6 +24,7 @@ export class Application {
         }
 
         this.controllerHandlers.set(simplifiedName, new ControllerManager(controller));
+        this.registerHelpers(simplifiedName, controller.helpers);
     }
 
     destroy() {
@@ -29,6 +35,20 @@ export class Application {
 
     getControllerForElement(element: HTMLElement, controller: string) {
         return this.controllerHandlers.get(controller).findInstanceForElement(element).controller;
+    }
+
+    private registerHelpers(simplifiedName: string, helpers: HelperMap) { //TODO
+        Object.keys(helpers).forEach(key => {
+            this.registeredHelpers[key] = (element: HTMLElement, data: any) => {
+                let controller = this.getControllerForElement(element, simplifiedName);
+
+                if (!controller) {
+                    throw 'Unable to find ' + simplifiedName + ' controller for element';
+                }
+
+                return helpers[key](controller, data);
+            };
+        });
     }
 
     /**
