@@ -24,7 +24,16 @@ export class ModalController extends Controller {
     static bindings = {
         show: ['click', ModalController.show] as Binding,
         hide: ['click', ModalController.hide] as Binding
-        // TODO we also want to bind some to document on show as well! 
+    };
+
+    static helpers = {
+        showModal(instance: ModalController): void {
+            ModalController.show.call(instance); //TODO static methods not terribly friendly
+        },
+
+        hideModal(instance: ModalController) {
+            ModalController.show.call(instance);
+        }
     };
 
     connect() {
@@ -158,27 +167,4 @@ export class ModalController extends Controller {
     static hide(this: ModalController, e: Event) {
         this.toggle(false);
     }
-}
-
-export const helpers = {
-    showModal,
-    hideModal
-}
-
-function showModal(this: Application, element: HTMLElement) {
-    toggleModal(this, element, true);
-}
-
-function hideModal(this: Application, element: HTMLElement) {
-    toggleModal(this, element, false);
-}
-
-function toggleModal(app: Application, element: HTMLElement, show?: boolean | undefined) {
-    var controller: ModalController = app.getControllerForElement(element, 'modal') as ModalController;
-
-    if (!controller) {
-        throw 'Unable to get modal controller from element';
-    }
-
-    show ? ModalController.show.call(controller) : ModalController.hide.call(controller); //TODO static methods not terribly friendly
 }
