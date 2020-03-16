@@ -2,12 +2,14 @@ import { Controller } from "../../src/index";
 import { TestSampleController, sample as TestSampleSample } from "./sample";
 import { ModalController, sample as ModalSample } from "./modal";
 import { Binding } from "../../src/controller";
+import { PopoverController, sample as PopoverSample } from "./popover";
 
 type Mapping = [typeof Controller, string];
 
 const types = new Map([
     [TestSampleController.name, [TestSampleController, TestSampleSample] as Mapping],
-    [ModalController.name, [ModalController, ModalSample] as Mapping]
+    [ModalController.name, [ModalController, ModalSample] as Mapping],
+    [PopoverController.name, [PopoverController, PopoverSample] as Mapping]
 ]);
 
 export class ControllerListController extends Controller {
