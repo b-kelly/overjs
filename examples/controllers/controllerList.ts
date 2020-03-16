@@ -21,6 +21,7 @@ export class ControllerListController extends Controller {
         this.baseElement.innerHTML = `
             ${this.generateList()}
             <div ov-target="demo"></div>
+            <textarea ov-target="markup" readonly class="w50" style="height: 512px;"></textarea>
         `;
     }
 
@@ -38,5 +39,8 @@ export class ControllerListController extends Controller {
 
         var container = this.target('demo');
         container.innerHTML = mapping[1];
+
+        var markup = <HTMLTextAreaElement>this.target('markup');
+        markup.value = mapping[1];
     }
 }
