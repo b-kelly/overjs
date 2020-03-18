@@ -1,5 +1,4 @@
-import { Controller } from "@overjs/core";
-import { Binding } from "@overjs/core";
+import { Controller, Binding } from "@overjs/core";
 // @ts-ignore TODO uses popperjs as a dependency loaded via script tag
 let Popper = window.Popper;
 
