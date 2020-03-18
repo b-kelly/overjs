@@ -7,10 +7,6 @@ Experimental front end framework that sits over your current markup
 
 ## Deployment
 
-### Library
+### Library / Docs
 
 `npm run build`
-
-### Documents
-
-`npm run build:docs`
