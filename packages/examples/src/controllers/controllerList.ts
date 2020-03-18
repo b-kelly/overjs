@@ -1,7 +1,7 @@
-import { Controller } from "../../src/index";
+import { Controller } from "@overjs/core";
 import { TestSampleController, sample as TestSampleSample } from "./sample";
 import { ModalController, sample as ModalSample } from "./modal";
-import { Binding } from "../../src/controller";
+import { Binding } from "@overjs/core";
 import { PopoverController, sample as PopoverSample } from "./popover";
 
 type Mapping = [typeof Controller, string];

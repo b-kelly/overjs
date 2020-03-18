@@ -1,4 +1,4 @@
-import {Application} from '../src/index';
+import {Application} from '@overjs/core';
 import { TestSampleController } from './controllers/sample';
 import { ControllerListController } from './controllers/controllerList';
 import { ModalController } from './controllers/modal';

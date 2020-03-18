@@ -7,7 +7,12 @@ module.exports = {
         rules: [
             {
                 test: /\.tsx?$/,
-                use: 'ts-loader',
+                use: [{
+                    loader: 'ts-loader',
+                    options: {
+                        configFile: 'tsconfig.build.json'
+                    }
+                }],
                 exclude: /node_modules/,
             },
         ],
@@ -16,7 +21,7 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.js'],
     },
     output: {
-        filename: 'bundle.js',
+        filename: 'index.js',
         path: path.resolve(__dirname, 'dist'),
     },
 };
