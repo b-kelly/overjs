@@ -6,7 +6,7 @@
   "scripts": {
     "start": "lerna run --parallel watch",
     "build": "lerna run build",
-    "init": "lerna bootstrap"
+    "init": "lerna bootstrap && npm run build"
   },
   "author": "",
   "license": "ISC",
