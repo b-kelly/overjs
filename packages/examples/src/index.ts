@@ -17,6 +17,8 @@ app.start();
 //TODO expose better
 // @ts-ignore;
 window.helpers = app.helpers;
+//@ts-ignore
+window.helpers["getControllerForElement"] = app.getControllerForElement.bind(app);
 
 document.querySelector('.js-disconnect-all').addEventListener('click', (e) => {
     app.destroy();
