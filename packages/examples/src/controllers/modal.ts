@@ -27,11 +27,11 @@ export class ModalController extends Controller {
 
     static helpers = {
         showModal(instance: ModalController): void {
-            ModalController.show.call(instance); //TODO static methods not terribly friendly
+            instance.show();
         },
 
         hideModal(instance: ModalController) {
-            ModalController.show.call(instance);
+            instance.hide();
         }
     };
 
@@ -41,6 +41,14 @@ export class ModalController extends Controller {
 
     disconnect() {
         this.unbindHideEvents();
+    }
+
+    show() {
+        this.toggle(true);
+    }
+
+    hide() {
+        this.toggle(false);
     }
 
     private validate() {
@@ -215,10 +223,10 @@ export class ModalController extends Controller {
     }
 
     static show(this: ModalController, e: Event) {
-        this.toggle(true);
+        this.show();
     }
 
     static hide(this: ModalController, e: Event) {
-        this.toggle(false);
+        this.hide();
     }
 }
