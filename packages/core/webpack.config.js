@@ -1,7 +1,8 @@
 const path = require('path');
 
-module.exports = {
-    mode: "production",
+module.exports = (env, argv) =>  ({
+    mode: argv.mode === 'development' ? 'development' : 'production',
+    devtool: argv.mode === 'development' ? "inline-source-map" : null,
     entry: './src/index.ts',
     module: {
         rules: [
@@ -25,4 +26,4 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         libraryTarget: 'umd',
     },
-};
+});
