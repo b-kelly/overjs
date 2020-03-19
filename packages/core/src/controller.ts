@@ -136,7 +136,7 @@ export type Helper = (instance: Controller, data?: any) => any;
 /**
  * Describes the shape of a controller binding value
  */
-export type Binding = [keyof HTMLElementEventMap, EventListener];
+export type Binding = [keyof HTMLElementEventMap, (this: Controller, evt: Event) => void];
 
 /**
  * Describes the shape of all the helper functions on a controller
