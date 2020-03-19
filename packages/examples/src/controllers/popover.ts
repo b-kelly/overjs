@@ -1,7 +1,5 @@
-import { Controller } from "../../src/index";
-import { Binding } from "../../src/controller";
-// @ts-ignore TODO uses popperjs as a dependency loaded via script tag
-let Popper = window.Popper;
+import { Controller, Binding } from "@overjs/core";
+import Popper from "popper.js";
 
 export const sample = `
 <div ov="popover"
@@ -28,7 +26,7 @@ export class PopoverController extends Controller {
         }
     };
 
-    private popper: any; //TODO needs popper.js import
+    private popper: Popper;
 
     get isVisible() {
         var popover = this.target('popover');
@@ -105,7 +103,7 @@ export class PopoverController extends Controller {
             eventsEnabled: this.isVisible
         });
 
-        this.popper.options.placement = this.data.placement || "bottom";
+        this.popper.options.placement = this.data.placement as Popper.Placement || "bottom";
     }
 
     private scheduleUpdate() {

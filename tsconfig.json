@@ -1,9 +1,14 @@
 {
-    "compilerOptions": {
-        "outDir": "./dist/",
-        "noImplicitAny": true,
-        "module": "es6",
-        "target": "es6",
-        "sourceMap": true,
+  "extends": "./tsconfig.build.json",
+  "compilerOptions": {
+    "baseUrl": "./packages",
+    "paths": {
+      "@overjs/core": [
+        "core/src/index.ts"
+      ],
+      "@overjs/examples": [
+        "examples/src/index.ts"
+      ],
     }
+  }
 }

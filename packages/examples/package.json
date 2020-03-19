@@ -1,0 +1,28 @@
+{
+	"name": "@overjs/examples",
+	"version": "0.1.0",
+	"description": "",
+	"private": true,
+	"scripts": {
+		"start": "npm run watch",
+		"build": "webpack",
+		"watch": "webpack-dev-server --open"
+	},
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"css-loader": "^3.4.2",
+		"html-webpack-plugin": "^3.2.0",
+		"mini-css-extract-plugin": "^0.9.0",
+		"ts-loader": "^6.2.1",
+		"typescript": "^3.8.3",
+		"webpack": "^4.42.0",
+		"webpack-cli": "^3.3.11",
+		"webpack-dev-server": "^3.10.3"
+	},
+	"dependencies": {
+		"@overjs/core": "*",
+		"@stackoverflow/stacks": "^0.48.1",
+		"popper.js": "^1.16.1"
+	}
+}

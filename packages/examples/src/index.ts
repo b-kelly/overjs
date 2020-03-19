@@ -1,8 +1,10 @@
-import {Application} from '../src/index';
+import {Application} from '@overjs/core';
 import { TestSampleController } from './controllers/sample';
 import { ControllerListController } from './controllers/controllerList';
 import { ModalController } from './controllers/modal';
 import { PopoverController } from './controllers/popover';
+
+import "@stackoverflow/stacks/dist/css/stacks.min.css"
 
 var app = new Application();
 app.register(TestSampleController);
