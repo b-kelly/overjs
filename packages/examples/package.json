@@ -4,8 +4,9 @@
 	"description": "",
 	"private": true,
 	"scripts": {
-		"start": "webpack-dev-server",
-		"build": "webpack"
+		"start": "npm run watch",
+		"build": "webpack",
+		"watch": "webpack-dev-server --open"
 	},
 	"author": "",
 	"license": "ISC",

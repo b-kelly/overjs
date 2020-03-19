@@ -4,6 +4,7 @@
   "description": "",
   "private": true,
   "scripts": {
+    "watch": "webpack --watch",
     "build": "webpack"
   },
   "main": "dist/index.js",

@@ -4,8 +4,9 @@
   "description": "",
   "private": true,
   "scripts": {
-    "start": "lerna run start",
-    "build": "lerna run build"
+    "start": "lerna run --parallel watch",
+    "build": "lerna run build",
+    "init": "lerna bootstrap"
   },
   "author": "",
   "license": "ISC",
