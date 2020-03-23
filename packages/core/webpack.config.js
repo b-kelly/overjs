@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = (env, argv) =>  ({
     mode: argv.mode === 'development' ? 'development' : 'production',
-    devtool: argv.mode === 'development' ? "inline-source-map" : null,
+    devtool: argv.mode === 'development' ? "inline-source-map" : false,
     entry: './src/index.ts',
     module: {
         rules: [
