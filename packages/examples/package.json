@@ -22,6 +22,7 @@
 	},
 	"dependencies": {
 		"@overjs/core": "*",
+		"@overjs/jsx": "*",
 		"@stackoverflow/stacks": "^0.48.1",
 		"popper.js": "^1.16.1"
 	}

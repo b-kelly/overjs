@@ -1,4 +1,4 @@
-import {Application} from '@overjs/core';
+import { JsxApplication } from '@overjs/jsx';
 import { TestSampleController } from './controllers/sample';
 import { ControllerListController } from './controllers/controllerList';
 import { ModalController } from './controllers/modal';
@@ -6,7 +6,7 @@ import { PopoverController } from './controllers/popover';
 
 import "@stackoverflow/stacks/dist/css/stacks.min.css"
 
-var app = new Application();
+var app = new JsxApplication('controller-list');
 app.register(TestSampleController);
 app.register(ControllerListController);
 app.register(ModalController);
