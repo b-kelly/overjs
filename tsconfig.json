@@ -6,6 +6,9 @@
       "@overjs/core": [
         "core/src/index.ts"
       ],
+      "@overjs/jsx": [
+        "jsx/src/index.ts"
+      ],
       "@overjs/examples": [
         "examples/src/index.ts"
       ],

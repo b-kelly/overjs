@@ -7,6 +7,8 @@
         "outDir": "./dist/",
         "sourceMap": true,
         "target": "es6",
+        "jsx": "react",
+        "jsxFactory": "oJSX.createElement",
     },
     "exclude": [
         "node_modules",
