@@ -48,13 +48,14 @@ export class Observer {
      */
     private mutate(mutations: MutationRecord[], observer: MutationObserver) {
         mutations.forEach(mutation => {
+            console.log('test')
             if (mutation.type === 'childList') {
                 // handle removes first since we could be replacing an element
                 this.handleRemovedElements(mutation.removedNodes);
                 this.handleAddedElements(mutation.addedNodes);
             }
             else if (mutation.type === 'attributes') {
-                this.handleAttributeChange(mutation.target);
+                this.handleAttributeChange(mutation.target, mutation.attributeName, mutation.oldValue);
             }
         });
     }
@@ -85,8 +86,8 @@ export class Observer {
      * TODO implement
      * @param node 
      */
-    private handleAttributeChange(node: Node) {
-        // TODO
+    private handleAttributeChange(node: Node, attributeName: string, oldValue: string) {
+        this.delegates.attributeChangeDelegate(node as HTMLElement, attributeName, oldValue);
     }
 }
 
@@ -96,11 +97,16 @@ export class Observer {
 export type MutationDelegate = (element: HTMLElement) => void;
 
 /**
+ * Describes the shape of a AttributeMutationDelegate callback
+ */
+export type AttributeMutationDelegate = (element: HTMLElement, attributeName: string, oldValue: string) => void;
+
+/**
  * Describes the collection of delegates callbacks needed by an Observer 
  */
 export interface ObserverDelegates {
     additionDelegate: MutationDelegate;
     removalDelegate: MutationDelegate;
-    attributeChangeDelegate: MutationDelegate;
+    attributeChangeDelegate: AttributeMutationDelegate;
     getApplicableElements: (element: Element) => NodeList;
 }

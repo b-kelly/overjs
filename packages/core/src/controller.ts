@@ -74,7 +74,7 @@ export class Controller {
      * @param optionalElement An element to fire the event on rather than the baseElement
      */
     protected triggerEvent<T>(eventName: string, detail?: T, optionalElement?: Element) {
-        const namespacedName = Controller._getDomName(this['constructor'].name) + ':' + eventName;
+        const namespacedName = Controller.getDomName(this['constructor'].name) + ':' + eventName;
         var event : CustomEvent<T> = new CustomEvent(namespacedName, {bubbles: true, cancelable: true, detail: detail});
         (optionalElement || this.baseElement).dispatchEvent(event);
         return event;
@@ -114,8 +114,8 @@ export class Controller {
      * Translates this controller's name to the name you'd use to reference it in the dom
      * eg "TestSampleController" becomes "test-controller"
      */
-    public static getDomName() {
-        return this._getDomName(this.name);
+    public static domName() {
+        return this.getDomName(this.name);
     }
 
     /**
@@ -123,7 +123,7 @@ export class Controller {
      * eg "TestSampleController" becomes "test-controller" 
      * @param name 
      */
-    private static _getDomName(name: string) {
+    public static getDomName(name: string) {
         return name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase().replace(/-?controller$/, '').trim();
     }
 }

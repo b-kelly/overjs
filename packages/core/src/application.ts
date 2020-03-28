@@ -14,10 +14,14 @@ export class Application {
     /**
      * Instructs the application to start dom observation and hook up all registered controllers
      */
-    start() {
+    start(callback: () => void | null = null) {
         this.domReady(e => {
             this.hookup();
             this.started = true;
+
+            if (callback) {
+                callback();
+            }
         });
     }
 
@@ -31,7 +35,7 @@ export class Application {
         }
 
         // changes a controller from "TestSampleController" to "test-sample"
-        var simplifiedName = controller.getDomName();
+        var simplifiedName = controller.domName();
 
         if (!simplifiedName) {
             throw 'Unable to initialize controller with bad name: ' + controller.name;
@@ -104,7 +108,7 @@ export class Application {
         this.observer = new Observer(document.documentElement, {
             additionDelegate: this.enhanceElement.bind(this),
             removalDelegate: this.degradeElement.bind(this),
-            attributeChangeDelegate: null,
+            attributeChangeDelegate: this.handleAttributeChange.bind(this),
             getApplicableElements: Application.getApplicableElements
         });
         this.observer.connect();
@@ -184,6 +188,25 @@ export class Application {
             // get all applicable descendants and degrade them
             let elements = Application.getApplicableElements(el);
             elements.forEach(e => this.degradeElement(e));
+        }
+    }
+
+    private handleAttributeChange(el: HTMLElement, attributeName: string, oldValue: string) {
+        let newValue = el.getAttribute(attributeName);
+        if (attributeName === 'ov') {
+            if (oldValue && oldValue !== newValue) {
+                //this.degradeElement(el); TODO!
+
+                if (newValue) {
+                    this.enhanceElement(el);
+                }
+            }
+            else if (!oldValue && newValue) {
+                this.enhanceElement(el);
+            }
+        }
+        else if (attributeName == 'ov-target') {
+            //TODO!
         }
     }
 
