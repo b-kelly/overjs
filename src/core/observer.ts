@@ -50,7 +50,6 @@ export class Observer {
      */
     private mutate(mutations: MutationRecord[]) {
         mutations.forEach((mutation) => {
-            console.log("test");
             if (mutation.type === "childList") {
                 // handle removes first since we could be replacing an element
                 this.handleRemovedElements(mutation.removedNodes);
