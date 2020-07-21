@@ -16,14 +16,14 @@ export class Application {
     /**
      * Instructs the application to start dom observation and hook up all registered controllers
      */
-    start(callback: () => void | null = null): void {
-        this.domReady(() => {
-            this.hookup();
-            this.started = true;
+    start(): Promise<void> {
+        return new Promise((resolve) => {
+            this.domReady(() => {
+                this.hookup();
+                this.started = true;
 
-            if (callback) {
-                callback();
-            }
+                resolve();
+            });
         });
     }
 
