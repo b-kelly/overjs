@@ -1,7 +1,6 @@
 import { Controller } from "../core";
 
 export abstract class JsxController extends Controller {
-
     constructor(el: HTMLElement) {
         super(el);
     }

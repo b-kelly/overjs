@@ -26,8 +26,11 @@ export class JsxApplication extends Application {
     render(root: HTMLElement) {
         const nodeName = root.nodeName;
         const controllerName = Controller.getDomName(nodeName);
-        root.setAttribute('js', controllerName);
-        const controller = this.getControllerForElement(root, controllerName) as JsxController;
+        root.setAttribute("js", controllerName);
+        const controller = this.getControllerForElement(
+            root,
+            controllerName
+        ) as JsxController;
 
         if (!controller) {
             return;

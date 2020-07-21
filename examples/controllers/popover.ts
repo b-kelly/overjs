@@ -17,21 +17,21 @@ export const sample = `
 
 export class PopoverController extends Controller {
     static bindings = {
-        toggle: ['click', PopoverController.toggle] as Binding
+        toggle: ["click", PopoverController.toggle] as Binding,
     };
 
     static helpers = {
         togglePopover(instance: PopoverController, shown: boolean): void {
             instance.toggle(shown);
-        }
+        },
     };
 
     private popper: Popper;
 
     get isVisible() {
-        var popover = this.target('popover');
+        var popover = this.target("popover");
 
-        return popover && popover.classList.contains('is-visible');
+        return popover && popover.classList.contains("is-visible");
     }
 
     connect() {
@@ -55,7 +55,7 @@ export class PopoverController extends Controller {
         let currentlyVisible = this.isVisible;
         let toShow = show;
 
-        if (typeof show === 'undefined') {
+        if (typeof show === "undefined") {
             toShow = !currentlyVisible;
         }
 
@@ -63,7 +63,7 @@ export class PopoverController extends Controller {
             return;
         }
 
-        let triggeredEvent = this.triggerEvent(toShow ? 'show' : 'hide');
+        let triggeredEvent = this.triggerEvent(toShow ? "show" : "hide");
 
         if (triggeredEvent.defaultPrevented) {
             return;
@@ -73,23 +73,22 @@ export class PopoverController extends Controller {
             this.initializePopper();
         }
 
-        let popover = this.target('popover');
+        let popover = this.target("popover");
 
-        popover.classList.toggle('is-visible', toShow);
+        popover.classList.toggle("is-visible", toShow);
 
         if (toShow) {
             this.popper.enableEventListeners();
             this.scheduleUpdate();
             this.bindDocumentEvents();
             this.toggleOptionalClasses(true);
-        }
-        else {
+        } else {
             this.popper.disableEventListeners();
             this.unbindDocumentEvents();
             this.toggleOptionalClasses(false);
         }
 
-        this.triggerEvent(toShow ? 'shown' : 'hide');
+        this.triggerEvent(toShow ? "shown" : "hide");
     }
 
     private validate() {
@@ -97,13 +96,14 @@ export class PopoverController extends Controller {
     }
 
     private initializePopper() {
-        let popover = this.target('popover');
-        let referenceElement = this.target('toggle');
+        let popover = this.target("popover");
+        let referenceElement = this.target("toggle");
         this.popper = new Popper(referenceElement, popover, {
-            eventsEnabled: this.isVisible
+            eventsEnabled: this.isVisible,
         });
 
-        this.popper.options.placement = this.data.placement as Popper.Placement || "bottom";
+        this.popper.options.placement =
+            (this.data.placement as Popper.Placement) || "bottom";
     }
 
     private scheduleUpdate() {
@@ -113,18 +113,18 @@ export class PopoverController extends Controller {
     }
 
     private bindDocumentEvents() {
-        this.bindDocumentEvent('click', 'hideOnClick', this.hideOnOutsideClick);
-        this.bindDocumentEvent('keyup', 'hideOnEsc', this.hideOnEsc);
+        this.bindDocumentEvent("click", "hideOnClick", this.hideOnOutsideClick);
+        this.bindDocumentEvent("keyup", "hideOnEsc", this.hideOnEsc);
     }
 
     private unbindDocumentEvents() {
-        this.unbindDocumentEvent('click', 'hideOnClick');
-        this.unbindDocumentEvent('keyup', 'hideOnEsc');
+        this.unbindDocumentEvent("click", "hideOnClick");
+        this.unbindDocumentEvent("keyup", "hideOnEsc");
     }
 
     private hideOnOutsideClick(e: MouseEvent) {
         let target = <Node>e.target;
-        var popover = this.target('popover');
+        var popover = this.target("popover");
 
         if (!popover?.contains(target)) {
             PopoverController.toggle.call(this, false);
@@ -134,7 +134,7 @@ export class PopoverController extends Controller {
     }
 
     private hideOnEsc(e: KeyboardEvent) {
-        if (e.key !== 'Escape') {
+        if (e.key !== "Escape") {
             return true;
         }
 
@@ -148,7 +148,7 @@ export class PopoverController extends Controller {
             return;
         }
 
-        let referenceElement = this.target('toggle');
+        let referenceElement = this.target("toggle");
 
         var cl = referenceElement.classList;
         this.data.toggleClass!.split(/\s+/).forEach(function (cls: string) {

@@ -8,7 +8,7 @@ export class Controller {
      * A map of all the helper functions this controller exposes, keyed on the exposed helper's name
      */
     static helpers: HelperMap = {};
-    
+
     /**
      * The base element this controller is attached to
      */
@@ -17,7 +17,7 @@ export class Controller {
     /**
      * Map of all events this controller has dynamically bound to the document via bindDocumentEvent
      */
-    private boundDocumentMethods: {[key: string]: EventListener } = { };
+    private boundDocumentMethods: { [key: string]: EventListener } = {};
 
     constructor(el: HTMLElement) {
         this.baseElement = el;
@@ -56,7 +56,9 @@ export class Controller {
      * @param target The target to fetch
      */
     protected target(target: string) {
-        return this.baseElement.querySelector<HTMLElement>(`[js-target="${target}"]`);
+        return this.baseElement.querySelector<HTMLElement>(
+            `[js-target="${target}"]`
+        );
     }
 
     /**
@@ -64,7 +66,9 @@ export class Controller {
      * @param target The targets to fetch
      */
     protected targets(target: string) {
-        return this.baseElement.querySelectorAll<HTMLElement>(`[js-target="${target}"]`);
+        return this.baseElement.querySelectorAll<HTMLElement>(
+            `[js-target="${target}"]`
+        );
     }
 
     /**
@@ -73,9 +77,18 @@ export class Controller {
      * @param detail The event detail object to attach to the custom event
      * @param optionalElement An element to fire the event on rather than the baseElement
      */
-    protected triggerEvent<T>(eventName: string, detail?: T, optionalElement?: Element) {
-        const namespacedName = Controller.getDomName(this['constructor'].name) + ':' + eventName;
-        const event : CustomEvent<T> = new CustomEvent(namespacedName, {bubbles: true, cancelable: true, detail: detail});
+    protected triggerEvent<T>(
+        eventName: string,
+        detail?: T,
+        optionalElement?: Element
+    ) {
+        const namespacedName =
+            Controller.getDomName(this["constructor"].name) + ":" + eventName;
+        const event: CustomEvent<T> = new CustomEvent(namespacedName, {
+            bubbles: true,
+            cancelable: true,
+            detail: detail,
+        });
         (optionalElement || this.baseElement).dispatchEvent(event);
         return event;
     }
@@ -86,8 +99,13 @@ export class Controller {
      * @param key The unique key to reference this event for unbinding later
      * @param listener The event listener for this event
      */
-    protected bindDocumentEvent(eventType: string, key: string, listener: EventListener) {
-        const boundFunction = this.boundDocumentMethods[key] || listener.bind(this);
+    protected bindDocumentEvent(
+        eventType: string,
+        key: string,
+        listener: EventListener
+    ) {
+        const boundFunction =
+            this.boundDocumentMethods[key] || listener.bind(this);
 
         this.boundDocumentMethods[key] = boundFunction;
 
@@ -120,11 +138,15 @@ export class Controller {
 
     /**
      * Translates a controller name string to the name you'd use to reference it in the dom
-     * eg "TestSampleController" becomes "test-controller" 
-     * @param name 
+     * eg "TestSampleController" becomes "test-controller"
+     * @param name
      */
     public static getDomName(name: string) {
-        return name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase().replace(/-?controller$/, '').trim();
+        return name
+            .replace(/([a-z])([A-Z])/g, "$1-$2")
+            .toLowerCase()
+            .replace(/-?controller$/, "")
+            .trim();
     }
 }
 
@@ -136,18 +158,21 @@ export type Helper = (instance: Controller, data?: any) => any;
 /**
  * Describes the shape of a controller binding value
  */
-export type Binding = [keyof HTMLElementEventMap, (this: Controller, evt: Event) => void];
+export type Binding = [
+    keyof HTMLElementEventMap,
+    (this: Controller, evt: Event) => void
+];
 
 /**
  * Describes the shape of all the helper functions on a controller
  */
 export interface HelperMap {
-    [helperName: string]: Helper
+    [helperName: string]: Helper;
 }
 
 /**
  * Describes the shape of all bindings on a controller
  */
 export interface BindingMap {
-    [targetName: string]: Binding
+    [targetName: string]: Binding;
 }

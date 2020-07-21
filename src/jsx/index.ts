@@ -1,6 +1,6 @@
-export { JsxApplication } from './JsxApplication';
-export { JsxController } from './JsxController';
-export { createElement } from './createElement';
+export { JsxApplication } from "./JsxApplication";
+export { JsxController } from "./JsxController";
+export { createElement } from "./createElement";
 
 export interface IntrinsicElements {
     [elemName: string]: any;

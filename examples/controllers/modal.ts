@@ -21,8 +21,8 @@ export let sample = `
 
 export class ModalController extends Controller {
     static bindings = {
-        show: ['click', ModalController.show] as Binding,
-        hide: ['click', ModalController.hide] as Binding
+        show: ["click", ModalController.show] as Binding,
+        hide: ["click", ModalController.hide] as Binding,
     };
 
     static helpers = {
@@ -32,7 +32,7 @@ export class ModalController extends Controller {
 
         hideModal(instance: ModalController) {
             instance.hide();
-        }
+        },
     };
 
     connect() {
@@ -57,8 +57,8 @@ export class ModalController extends Controller {
 
     private toggle(show?: boolean | undefined) {
         let toShow = show;
-        let modal = this.target('modal');
-        let isVisible = modal.getAttribute('aria-hidden') === 'false';
+        let modal = this.target("modal");
+        let isVisible = modal.getAttribute("aria-hidden") === "false";
 
         // if we're letting the class toggle, we need to figure out if the popover is visible manually
         if (typeof toShow === "undefined") {
@@ -70,10 +70,14 @@ export class ModalController extends Controller {
             return;
         }
 
-        let returnElement = <HTMLElement>this.target('returnElement');
+        let returnElement = <HTMLElement>this.target("returnElement");
 
         // show/hide events trigger before toggling the class
-        var triggeredEvent = this.triggerEvent(toShow ? "show" : "hide", { returnElement: returnElement }, modal);
+        var triggeredEvent = this.triggerEvent(
+            toShow ? "show" : "hide",
+            { returnElement: returnElement },
+            modal
+        );
 
         // if this pre-show/hide event was prevented, don't attempt to continue changing the modal state
         if (triggeredEvent.defaultPrevented) {
@@ -85,38 +89,46 @@ export class ModalController extends Controller {
 
         if (toShow) {
             this.bindHideEvents();
-        }
-        else {
+        } else {
             this.unbindHideEvents();
             this.focusReturnElement(returnElement);
             this.removeModalOnHide();
         }
 
         // check for transitionend support
-        var supportsTransitionEnd = (<HTMLElement>modal).ontransitionend !== undefined;
+        var supportsTransitionEnd =
+            (<HTMLElement>modal).ontransitionend !== undefined;
 
         // shown/hidden events trigger after toggling the class
         if (supportsTransitionEnd) {
             // wait until after the modal finishes transitioning to fire the event
-            modal.addEventListener("transitionend", () => {
-                //TODO this is firing waaay to soon?
-                this.triggerEvent(toShow ? "shown" : "hidden", null, modal);
-            }, { once: true });
+            modal.addEventListener(
+                "transitionend",
+                () => {
+                    //TODO this is firing waaay to soon?
+                    this.triggerEvent(toShow ? "shown" : "hidden", null, modal);
+                },
+                { once: true }
+            );
         } else {
             this.triggerEvent(toShow ? "shown" : "hidden", null, modal);
-        } 
+        }
     }
 
     private bindHideEvents() {
-        this.bindDocumentEvent('keyup', 'hideOnEsc', this.hideOnEsc);
-        this.bindDocumentEvent('click', 'hideOnOutsideClick', this.hideOnOutsideClick);
+        this.bindDocumentEvent("keyup", "hideOnEsc", this.hideOnEsc);
+        this.bindDocumentEvent(
+            "click",
+            "hideOnOutsideClick",
+            this.hideOnOutsideClick
+        );
         this.handleFocusableElements();
     }
 
     private unbindHideEvents() {
-        this.unbindDocumentEvent('keyup', 'hideOnEsc');
-        this.unbindDocumentEvent('click', 'hideOnOutsideClick');
-        this.unbindDocumentEvent('keydown', 'trapTab');
+        this.unbindDocumentEvent("keyup", "hideOnEsc");
+        this.unbindDocumentEvent("click", "hideOnOutsideClick");
+        this.unbindDocumentEvent("keydown", "trapTab");
     }
 
     private focusReturnElement(returnElement: HTMLElement) {
@@ -124,15 +136,19 @@ export class ModalController extends Controller {
             return;
         }
 
-        let modal = this.target('modal');
+        let modal = this.target("modal");
 
         //TODO prefix event
-        modal.addEventListener("modal:hidden", () => {
-            // double check the element still exists when the event is called
-            if (returnElement && document.body.contains(returnElement)) {
-                returnElement.focus();
-            }
-        }, {once: true });
+        modal.addEventListener(
+            "modal:hidden",
+            () => {
+                // double check the element still exists when the event is called
+                if (returnElement && document.body.contains(returnElement)) {
+                    returnElement.focus();
+                }
+            },
+            { once: true }
+        );
     }
 
     private removeModalOnHide() {
@@ -140,19 +156,23 @@ export class ModalController extends Controller {
             return;
         }
 
-        let modal = this.target('modal');
+        let modal = this.target("modal");
 
         //TODO prefix event
-        modal.addEventListener("modal:hidden", () => {
-            this.baseElement.remove();
-        }, {once: true });
+        modal.addEventListener(
+            "modal:hidden",
+            () => {
+                this.baseElement.remove();
+            },
+            { once: true }
+        );
     }
 
     private hideOnOutsideClick(e: MouseEvent) {
         let target = <Node>e.target;
-        let modal = this.target('modal');
+        let modal = this.target("modal");
 
-        if (!modal.querySelector('.s-modal--dialog')?.contains(target)) {
+        if (!modal.querySelector(".s-modal--dialog")?.contains(target)) {
             ModalController.hide.call(this, e);
         }
 
@@ -160,7 +180,7 @@ export class ModalController extends Controller {
     }
 
     private hideOnEsc(e: KeyboardEvent) {
-        if (e.key !== 'Escape') {
+        if (e.key !== "Escape") {
             return true;
         }
 
@@ -170,11 +190,16 @@ export class ModalController extends Controller {
     }
 
     private handleFocusableElements() {
-        let modal = this.target('modal');
+        let modal = this.target("modal");
 
         // get all tabbable items
-        var allTabbables = Array.from(modal.querySelectorAll<HTMLElement>("[href], input, select, textarea, button, [tabindex]"))
-            .filter((el: Element) => el.matches(":not([disabled]):not([tabindex='-1'])"));
+        var allTabbables = Array.from(
+            modal.querySelectorAll<HTMLElement>(
+                "[href], input, select, textarea, button, [tabindex]"
+            )
+        ).filter((el: Element) =>
+            el.matches(":not([disabled]):not([tabindex='-1'])")
+        );
 
         if (!allTabbables.length) {
             return;
@@ -182,36 +207,40 @@ export class ModalController extends Controller {
 
         var initialFocus = allTabbables[0];
 
-        var intialFocusTarget = this.target('initialFocus');
+        var intialFocusTarget = this.target("initialFocus");
         if (intialFocusTarget) {
             initialFocus = intialFocusTarget;
         }
 
         // focus on the first focusable item within the modal
-        modal.addEventListener("modal:shown", () => {
-            // double check the element still exists when the event is called
-            if (initialFocus && document.body.contains(initialFocus)) {
-                initialFocus.focus()
-            }
-        }, {once: true });
+        modal.addEventListener(
+            "modal:shown",
+            () => {
+                // double check the element still exists when the event is called
+                if (initialFocus && document.body.contains(initialFocus)) {
+                    initialFocus.focus();
+                }
+            },
+            { once: true }
+        );
 
         var firstTabbable = <HTMLElement>allTabbables[0];
         var lastTabbable = <HTMLElement>allTabbables[allTabbables.length - 1];
 
         // if the first or last item is tabbed over, ensure that the focus "loops" back to the end of the array instead of leaving the modal
-        this.bindDocumentEvent('keydown', 'trapTab', (e: KeyboardEvent) => {  
+        this.bindDocumentEvent("keydown", "trapTab", (e: KeyboardEvent) => {
             // if somehow the user has tabbed out of the modal or if focus started outside the modal, push them to the first item
             if (!modal.contains(<Element>e.target)) {
                 e.preventDefault();
                 firstTabbable.focus();
             }
-    
+
             // if they've tabbed backwards over the first item, then go to the last item
             if (e.target == firstTabbable && e.keyCode === 9 && e.shiftKey) {
                 e.preventDefault();
                 lastTabbable.focus();
             }
-    
+
             // if they've tabbed forwards over the last item, then go to the first item
             if (e.target == lastTabbable && e.keyCode === 9 && !e.shiftKey) {
                 e.preventDefault();

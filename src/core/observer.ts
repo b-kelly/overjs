@@ -11,9 +11,9 @@ export class Observer {
     constructor(observee: Element, delegates: ObserverDelegates) {
         this.delegates = delegates;
         this.observee = observee;
-        
+
         // create a new mutation observer and have it call `mutate` when a change happens
-        this.internalObserver = new MutationObserver(this.mutate.bind(this));        
+        this.internalObserver = new MutationObserver(this.mutate.bind(this));
     }
 
     /**
@@ -23,7 +23,7 @@ export class Observer {
         this.internalObserver.observe(this.observee, {
             attributes: true,
             childList: true,
-            subtree: true
+            subtree: true,
         });
     }
 
@@ -38,7 +38,9 @@ export class Observer {
      * Gathers all applicable elements and reports them as "added" to the delegates.additionDelegate
      */
     refresh() {
-        this.handleAddedElements(this.delegates.getApplicableElements(this.observee));
+        this.handleAddedElements(
+            this.delegates.getApplicableElements(this.observee)
+        );
     }
 
     /**
@@ -47,15 +49,18 @@ export class Observer {
      * @param observer The MutationObserver that reported the mutations
      */
     private mutate(mutations: MutationRecord[], observer: MutationObserver) {
-        mutations.forEach(mutation => {
-            console.log('test')
-            if (mutation.type === 'childList') {
+        mutations.forEach((mutation) => {
+            console.log("test");
+            if (mutation.type === "childList") {
                 // handle removes first since we could be replacing an element
                 this.handleRemovedElements(mutation.removedNodes);
                 this.handleAddedElements(mutation.addedNodes);
-            }
-            else if (mutation.type === 'attributes') {
-                this.handleAttributeChange(mutation.target, mutation.attributeName, mutation.oldValue);
+            } else if (mutation.type === "attributes") {
+                this.handleAttributeChange(
+                    mutation.target,
+                    mutation.attributeName,
+                    mutation.oldValue
+                );
             }
         });
     }
@@ -84,10 +89,18 @@ export class Observer {
 
     /**
      * TODO implement
-     * @param node 
+     * @param node
      */
-    private handleAttributeChange(node: Node, attributeName: string, oldValue: string) {
-        this.delegates.attributeChangeDelegate(node as HTMLElement, attributeName, oldValue);
+    private handleAttributeChange(
+        node: Node,
+        attributeName: string,
+        oldValue: string
+    ) {
+        this.delegates.attributeChangeDelegate(
+            node as HTMLElement,
+            attributeName,
+            oldValue
+        );
     }
 }
 
@@ -99,10 +112,14 @@ export type MutationDelegate = (element: HTMLElement) => void;
 /**
  * Describes the shape of a AttributeMutationDelegate callback
  */
-export type AttributeMutationDelegate = (element: HTMLElement, attributeName: string, oldValue: string) => void;
+export type AttributeMutationDelegate = (
+    element: HTMLElement,
+    attributeName: string,
+    oldValue: string
+) => void;
 
 /**
- * Describes the collection of delegates callbacks needed by an Observer 
+ * Describes the collection of delegates callbacks needed by an Observer
  */
 export interface ObserverDelegates {
     additionDelegate: MutationDelegate;

@@ -4,7 +4,9 @@ import { Observer } from "./observer";
 export class Application {
     private controllerHandlers = new Map<string, ControllerManager>();
     private observer: Observer;
-    private registeredHelpers: { [name: string]: (element: HTMLElement, data?: any) => any } = {};
+    private registeredHelpers: {
+        [name: string]: (element: HTMLElement, data?: any) => any;
+    } = {};
     private started = false;
 
     get helpers(): Readonly<Application["registeredHelpers"]> {
@@ -15,7 +17,7 @@ export class Application {
      * Instructs the application to start dom observation and hook up all registered controllers
      */
     start(callback: () => void | null = null) {
-        this.domReady(e => {
+        this.domReady((e) => {
             this.hookup();
             this.started = true;
 
@@ -31,17 +33,23 @@ export class Application {
      */
     register(controller: typeof Controller) {
         if (this.started) {
-            throw 'Unable to register a controller after the application has been started';
+            throw "Unable to register a controller after the application has been started";
         }
 
         // changes a controller from "TestSampleController" to "test-sample"
         const simplifiedName = controller.domName();
 
         if (!simplifiedName) {
-            throw 'Unable to initialize controller with bad name: ' + controller.name;
+            throw (
+                "Unable to initialize controller with bad name: " +
+                controller.name
+            );
         }
 
-        this.controllerHandlers.set(simplifiedName, new ControllerManager(controller));
+        this.controllerHandlers.set(
+            simplifiedName,
+            new ControllerManager(controller)
+        );
         this.registerHelpers(simplifiedName, controller.helpers);
     }
 
@@ -50,7 +58,7 @@ export class Application {
      */
     destroy() {
         this.observer.disconnect();
-        this.controllerHandlers.forEach(h => h.destroy());
+        this.controllerHandlers.forEach((h) => h.destroy());
         this.controllerHandlers.clear();
     }
 
@@ -84,14 +92,21 @@ export class Application {
      */
     private registerHelpers(simplifiedName: string, helpers: HelperMap) {
         // loop through each passed helper and register
-        Object.keys(helpers).forEach(key => {
+        Object.keys(helpers).forEach((key) => {
             // create a function that does the heavy lifting of getting the controller from the passed element
             // binding to the controller and then calling the helper on it, passing along all the necessary data
             const boundHelper = (element: HTMLElement, data: any) => {
-                const controller = this.getControllerForElement(element, simplifiedName);
+                const controller = this.getControllerForElement(
+                    element,
+                    simplifiedName
+                );
 
                 if (!controller) {
-                    throw 'Unable to find ' + simplifiedName + ' controller for element';
+                    throw (
+                        "Unable to find " +
+                        simplifiedName +
+                        " controller for element"
+                    );
                 }
 
                 return helpers[key](controller, data).bind(controller);
@@ -102,14 +117,14 @@ export class Application {
     }
 
     /**
-     * Builds and starts the dom observer, then prompts it to immediately connect all controllers 
+     * Builds and starts the dom observer, then prompts it to immediately connect all controllers
      */
     private hookup() {
         this.observer = new Observer(document.documentElement, {
             additionDelegate: this.enhanceElement.bind(this),
             removalDelegate: this.degradeElement.bind(this),
             attributeChangeDelegate: this.handleAttributeChange.bind(this),
-            getApplicableElements: Application.getApplicableElements
+            getApplicableElements: Application.getApplicableElements,
         });
         this.observer.connect();
 
@@ -122,7 +137,9 @@ export class Application {
      * @param element The element to search in for applicable elements
      */
     private static getApplicableElements(element: HTMLElement) {
-        return element.querySelectorAll<HTMLElement>(`[js], :not([js]) [js-target]`);
+        return element.querySelectorAll<HTMLElement>(
+            `[js], :not([js]) [js-target]`
+        );
     }
 
     /**
@@ -142,19 +159,17 @@ export class Application {
             return;
         }
 
-        if (el.hasAttribute('js')) {
+        if (el.hasAttribute("js")) {
             // tell the handler to hook up a new instance of the controller to this element
             // NOTE: this will automatically enhance all descendants, so no need to do so again
             handler[0].construct(el);
-        }
-        else if (el.hasAttribute('js-target')) {
+        } else if (el.hasAttribute("js-target")) {
             // ehances up a single applicable non-root element
             handler[0].connectControllerChild(handler[1], el);
-        }
-        else {
+        } else {
             // get all applicable descendants and enhance them
             const elements = Application.getApplicableElements(el);
-            elements.forEach(e => this.enhanceElement(e));
+            elements.forEach((e) => this.enhanceElement(e));
         }
     }
 
@@ -175,37 +190,37 @@ export class Application {
             return;
         }
 
-        if (el.hasAttribute('js')) {
+        if (el.hasAttribute("js")) {
             // tell the handler to degrade the root instance on this element
             // NOTE: this will automatically degrade all descendants, so no need to do so again
             handler[0].disconnectElement(el);
-        }
-        else if (el.hasAttribute('js-target')) {
+        } else if (el.hasAttribute("js-target")) {
             // degrade a specific non-root element
             handler[0].disconnectControllerChild(handler[1], el);
-        }
-        else {
+        } else {
             // get all applicable descendants and degrade them
             const elements = Application.getApplicableElements(el);
-            elements.forEach(e => this.degradeElement(e));
+            elements.forEach((e) => this.degradeElement(e));
         }
     }
 
-    private handleAttributeChange(el: HTMLElement, attributeName: string, oldValue: string) {
+    private handleAttributeChange(
+        el: HTMLElement,
+        attributeName: string,
+        oldValue: string
+    ) {
         const newValue = el.getAttribute(attributeName);
-        if (attributeName === 'js') {
+        if (attributeName === "js") {
             if (oldValue && oldValue !== newValue) {
                 //this.degradeElement(el); TODO!
 
                 if (newValue) {
                     this.enhanceElement(el);
                 }
-            }
-            else if (!oldValue && newValue) {
+            } else if (!oldValue && newValue) {
                 this.enhanceElement(el);
             }
-        }
-        else if (attributeName == 'js-target') {
+        } else if (attributeName == "js-target") {
             //TODO!
         }
     }
@@ -214,16 +229,18 @@ export class Application {
      * Gets the handler for a given element along with its parent controller
      * @param el The element to fetch the handler for
      */
-    private getHandlerForElement(el: HTMLElement): [ControllerManager, HTMLElement] {
+    private getHandlerForElement(
+        el: HTMLElement
+    ): [ControllerManager, HTMLElement] {
         // attempt to find the closest controller element
         // NOTE: this includes the given element itself as well
-        const parentController = el.closest('[js]');
+        const parentController = el.closest("[js]");
         if (!parentController) {
             // TODO should we throw?
             return null;
         }
 
-        const controllerName = parentController.getAttribute('js');
+        const controllerName = parentController.getAttribute("js");
 
         // if this controller is not registered, then there's nothing to do
         if (!this.controllerHandlers.has(controllerName)) {
@@ -239,17 +256,19 @@ export class Application {
      * Calls the callback when the dom is ready for interaction
      * @param callback the function to call when the dom is ready
      */
-    private domReady (callback: (e: Event) => void) {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-        else {
+    private domReady(callback: (e: Event) => void) {
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", callback);
+        } else {
             callback(null);
         }
     }
 }
 
-type ControllerInstance = { controller: Controller, bindings: InternalBindingMap };
+type ControllerInstance = {
+    controller: Controller;
+    bindings: InternalBindingMap;
+};
 
 /**
  * Helper construct that manages all instances of a single controller type
@@ -264,18 +283,21 @@ class ControllerManager {
 
     /**
      * Constructs and connects a new instance of a controller to the given element
-     * @param el The element to connect the newly created controller to 
+     * @param el The element to connect the newly created controller to
      */
     construct(el: HTMLElement) {
         if (!el) {
-            throw 'Unable to connect a controller to a non-existent element';
+            throw "Unable to connect a controller to a non-existent element";
         }
 
         // create a new controller of our stored type with this element as the baseElement
         const controller = new this.controllerType(el);
         const instance = {
             controller: controller,
-            bindings: new InternalBindingMap(controller, this.controllerType.bindings)
+            bindings: new InternalBindingMap(
+                controller,
+                this.controllerType.bindings
+            ),
         };
 
         // add the newly added controller to our stored instances
@@ -284,7 +306,7 @@ class ControllerManager {
         // start the controller lifecycle by calling construct
         controller.construct();
 
-        // bind the controller 
+        // bind the controller
         this.bindTargetEvents(instance.bindings, controller.baseElement);
 
         controller.connect();
@@ -295,7 +317,10 @@ class ControllerManager {
      * @param controllerElement The base controller element this child belongs to
      * @param childElement The child to connect
      */
-    connectControllerChild(controllerElement: HTMLElement, childElement: HTMLElement) {
+    connectControllerChild(
+        controllerElement: HTMLElement,
+        childElement: HTMLElement
+    ) {
         const instance = this.findInstanceForElement(controllerElement);
 
         if (!instance) {
@@ -309,7 +334,7 @@ class ControllerManager {
 
     /**
      * Disconnects an existing controller instance from the given element and removes it from this manager
-     * @param el 
+     * @param el
      */
     disconnectElement(el: HTMLElement) {
         const instance = this.findInstanceForElement(el);
@@ -329,10 +354,13 @@ class ControllerManager {
 
     /**
      * Disconnects a non-root element from its root controller
-     * @param controllerElement The base controller element this child belongs to 
+     * @param controllerElement The base controller element this child belongs to
      * @param childElement The child to disconnect
      */
-    disconnectControllerChild(controllerElement: HTMLElement, childElement: HTMLElement) {
+    disconnectControllerChild(
+        controllerElement: HTMLElement,
+        childElement: HTMLElement
+    ) {
         const instance = this.findInstanceForElement(controllerElement);
 
         if (!instance) {
@@ -348,7 +376,7 @@ class ControllerManager {
      * Destroys all instances within this manager by disconnecting each of them, then disposing of them
      */
     destroy() {
-        this.instances.forEach(i => {
+        this.instances.forEach((i) => {
             this.disconnectInstance(i);
         });
 
@@ -390,10 +418,12 @@ class ControllerManager {
      */
     private bindTargetEvents(bindings: InternalBindingMap, el: HTMLElement) {
         // get all the bindable elements from this element's decendants
-        const targets = Array.from(el.querySelectorAll<HTMLElement>('[js-target]'));
+        const targets = Array.from(
+            el.querySelectorAll<HTMLElement>("[js-target]")
+        );
 
         // if the base element is a target, initialize it too
-        if (el.hasAttribute('js-target')) {
+        if (el.hasAttribute("js-target")) {
             targets.push(el);
         }
 
@@ -404,7 +434,7 @@ class ControllerManager {
 
         // bind each targets' event to the bound function
         targets.forEach((t: HTMLElement) => {
-            const target = t.getAttribute('js-target');
+            const target = t.getAttribute("js-target");
             const binding = bindings.get(target);
 
             // if there is no event binding for this target, skip it
@@ -424,16 +454,18 @@ class ControllerManager {
      */
     private unbindTargets(bindings: InternalBindingMap, el: HTMLElement) {
         // get all the bindable elements from this element's decendants
-        const targets = Array.from(el.querySelectorAll<HTMLElement>('[js-target]'));
+        const targets = Array.from(
+            el.querySelectorAll<HTMLElement>("[js-target]")
+        );
 
         // if the base element is a target, initialize it too
-        if (el.hasAttribute('js-target')) {
+        if (el.hasAttribute("js-target")) {
             targets.push(el);
         }
 
         // unbind each targets' event
-        targets.forEach(t => {
-            const target = t.getAttribute('js-target');
+        targets.forEach((t) => {
+            const target = t.getAttribute("js-target");
             const binding = bindings.get(target);
 
             // this target isn't bound, so nothing to unbind
@@ -463,20 +495,20 @@ class InternalBindingMap {
      * @param bindings The controller's bindings
      */
     private bind(caller: Controller, bindings: BindingMap) {
-        Object.keys(bindings).forEach(k => {
+        Object.keys(bindings).forEach((k) => {
             const bindingSet = bindings[k];
 
             // wrap the bound function so that if it returns true/undefined, then prevent default
             const boundFunction = (e: Event) => {
                 // make sure the function call is bound to the caller so `this` is correct
                 const result = bindingSet[1].bind(caller)(e);
-                if (result || typeof result === 'undefined') {
+                if (result || typeof result === "undefined") {
                     e.preventDefault();
                     e.stopPropagation();
                 }
             };
 
-            // saves this pre-bound function for easy retrieval / unbinding 
+            // saves this pre-bound function for easy retrieval / unbinding
             this.targets[k] = [bindingSet[0], boundFunction];
         });
     }
