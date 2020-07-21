@@ -26,28 +26,28 @@ export class Controller {
     /**
      * Lifecyle method that is called immediately after the controller instance has been constructed
      */
-    construct() {
+    construct(): void {
         // Override in extending class
     }
 
     /**
      * Lifecycle method that is called after a controller has been completely connected
      */
-    connect() {
+    connect(): void {
         // Override in extending class
     }
 
     /**
      * Lifecycle method that is called after a controller has been disconnected
      */
-    disconnect() {
+    disconnect(): void {
         // Override in extending class
     }
 
     /**
      * The data allocated to this controller via data-* attributes on the base element
      */
-    protected get data() {
+    protected get data(): DOMStringMap {
         return this.baseElement.dataset;
     }
 
@@ -55,7 +55,7 @@ export class Controller {
      * Returns the first element for the given target
      * @param target The target to fetch
      */
-    protected target(target: string) {
+    protected target(target: string): HTMLElement {
         return this.baseElement.querySelector<HTMLElement>(
             `[js-target="${target}"]`
         );
@@ -65,7 +65,7 @@ export class Controller {
      * Returns all elements for the given target
      * @param target The targets to fetch
      */
-    protected targets(target: string) {
+    protected targets(target: string): NodeListOf<HTMLElement> {
         return this.baseElement.querySelectorAll<HTMLElement>(
             `[js-target="${target}"]`
         );
@@ -81,7 +81,7 @@ export class Controller {
         eventName: string,
         detail?: T,
         optionalElement?: Element
-    ) {
+    ): CustomEvent<T> {
         const namespacedName =
             Controller.getDomName(this["constructor"].name) + ":" + eventName;
         const event: CustomEvent<T> = new CustomEvent(namespacedName, {
@@ -103,7 +103,7 @@ export class Controller {
         eventType: string,
         key: string,
         listener: EventListener
-    ) {
+    ): void {
         const boundFunction =
             this.boundDocumentMethods[key] || listener.bind(this);
 
@@ -117,7 +117,7 @@ export class Controller {
      * @param eventType The type of event to unbind
      * @param key The unique key used when binding this event originally
      */
-    protected unbindDocumentEvent(eventType: string, key: string) {
+    protected unbindDocumentEvent(eventType: string, key: string): void {
         const boundFunction = this.boundDocumentMethods[key];
 
         if (!boundFunction) {
@@ -132,7 +132,7 @@ export class Controller {
      * Translates this controller's name to the name you'd use to reference it in the dom
      * eg "TestSampleController" becomes "test-controller"
      */
-    public static domName() {
+    public static domName(): string {
         return this.getDomName(this.name);
     }
 
@@ -141,7 +141,7 @@ export class Controller {
      * eg "TestSampleController" becomes "test-controller"
      * @param name
      */
-    public static getDomName(name: string) {
+    public static getDomName(name: string): string {
         return name
             .replace(/([a-z])([A-Z])/g, "$1-$2")
             .toLowerCase()

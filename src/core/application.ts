@@ -16,8 +16,8 @@ export class Application {
     /**
      * Instructs the application to start dom observation and hook up all registered controllers
      */
-    start(callback: () => void | null = null) {
-        this.domReady((e) => {
+    start(callback: () => void | null = null): void {
+        this.domReady(() => {
             this.hookup();
             this.started = true;
 
@@ -31,7 +31,7 @@ export class Application {
      * Registers a controller with this application, which connects its helpers and allows it to be hooked up to the dom
      * @param controller The controller class to register with this application instance
      */
-    register(controller: typeof Controller) {
+    register(controller: typeof Controller): void {
         if (this.started) {
             throw "Unable to register a controller after the application has been started";
         }
@@ -56,7 +56,7 @@ export class Application {
     /**
      * Destroys the application by instructing it to cease dom observation and destroy all existing controller instances
      */
-    destroy() {
+    destroy(): void {
         this.observer.disconnect();
         this.controllerHandlers.forEach((h) => h.destroy());
         this.controllerHandlers.clear();
@@ -67,7 +67,7 @@ export class Application {
      * @param element The element to fetch the controller for
      * @param controller The simplified name of the controller
      */
-    getControllerForElement(element: HTMLElement, controller: string) {
+    getControllerForElement(element: HTMLElement, controller: string): Controller {
         const handler = this.controllerHandlers.get(controller);
 
         // the given controller is not registered with this application

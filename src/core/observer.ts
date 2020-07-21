@@ -19,7 +19,7 @@ export class Observer {
     /**
      * Instructs the observer to start listening to the observee for changes
      */
-    connect() {
+    connect(): void {
         this.internalObserver.observe(this.observee, {
             attributes: true,
             childList: true,
@@ -30,14 +30,14 @@ export class Observer {
     /**
      * Instructs the observer to stop watching the observee for changes
      */
-    disconnect() {
+    disconnect(): void {
         this.internalObserver?.disconnect();
     }
 
     /**
      * Gathers all applicable elements and reports them as "added" to the delegates.additionDelegate
      */
-    refresh() {
+    refresh(): void {
         this.handleAddedElements(
             this.delegates.getApplicableElements(this.observee)
         );
@@ -48,7 +48,7 @@ export class Observer {
      * @param mutations All mutation records reported by the MutationObserver
      * @param observer The MutationObserver that reported the mutations
      */
-    private mutate(mutations: MutationRecord[], observer: MutationObserver) {
+    private mutate(mutations: MutationRecord[]) {
         mutations.forEach((mutation) => {
             console.log("test");
             if (mutation.type === "childList") {

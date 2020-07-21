@@ -11,7 +11,7 @@ export class JsxApplication extends Application {
     }
 
     // TODO document
-    start(callback: () => void | null = null) {
+    start(callback: () => void | null = null): void {
         super.start(() => {
             const root = document.querySelector<HTMLElement>(this.selector);
             this.render(root);
@@ -23,7 +23,7 @@ export class JsxApplication extends Application {
     }
 
     // TODO document
-    render(root: HTMLElement) {
+    render(root: HTMLElement): void {
         const nodeName = root.nodeName;
         const controllerName = Controller.getDomName(nodeName);
         root.setAttribute("js", controllerName);

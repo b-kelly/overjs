@@ -6,7 +6,7 @@ export abstract class JsxController extends Controller {
     }
 
     // TODO document
-    connect() {
+    connect(): void {
         const content = this.render();
         this.baseElement.appendChild(content);
     }
