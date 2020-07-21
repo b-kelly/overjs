@@ -1,4 +1,4 @@
-import { Controller } from "@overjs/core";
+import { Controller } from "../core";
 
 export abstract class JsxController extends Controller {
 

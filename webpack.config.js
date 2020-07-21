@@ -9,10 +9,7 @@ module.exports = (env, argv) =>  ({
             {
                 test: /\.tsx?$/,
                 use: [{
-                    loader: 'ts-loader',
-                    options: {
-                        configFile: 'tsconfig.build.json'
-                    }
+                    loader: 'ts-loader'
                 }],
                 exclude: /node_modules/,
             },

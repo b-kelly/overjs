@@ -5,7 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
     mode: "development",
     devtool: 'inline-source-map',
-    entry: './src/index.ts',
+    entry: './examples/index.ts',
     module: {
         rules: [
             {
@@ -15,10 +15,7 @@ module.exports = {
             {
                 test: /\.tsx?$/,
                 use: [{
-                    loader: 'ts-loader',
-                    options: {
-                        configFile: 'tsconfig.build.json'
-                    }
+                    loader: 'ts-loader'
                 }],
                 exclude: /node_modules/,
             },
@@ -33,7 +30,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/index.html'
+            template: './examples/index.html'
         }),
         new MiniCssExtractPlugin()
     ],

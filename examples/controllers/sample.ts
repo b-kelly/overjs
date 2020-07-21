@@ -1,4 +1,4 @@
-import { Controller } from "@overjs/core";
+import { Controller } from "../../src/core";
 
 export let sample = `
 <div js="test-sample"></div>

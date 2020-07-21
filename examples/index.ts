@@ -1,4 +1,4 @@
-import { JsxApplication } from '@overjs/jsx';
+import { JsxApplication } from '../src/jsx';
 import { TestSampleController } from './controllers/sample';
 import { ControllerListController } from './controllers/controllerList';
 import { ModalController } from './controllers/modal';

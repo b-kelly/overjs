@@ -3,7 +3,7 @@ Experimental front end framework that sits over your current markup
 
 ## Installation
 
-`npm run init`
+`npm i`
 
 ## Development
 

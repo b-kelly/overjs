@@ -1,4 +1,4 @@
-import { Controller, Binding } from "@overjs/core";
+import { Controller, Binding } from "../../src/core";
 
 export let sample = `
 <div js="modal">

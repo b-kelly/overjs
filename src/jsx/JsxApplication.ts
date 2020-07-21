@@ -1,4 +1,4 @@
-import { Application, Controller } from "@overjs/core";
+import { Application, Controller } from "../core";
 import { JsxController } from "./JsxController";
 
 export class JsxApplication extends Application {

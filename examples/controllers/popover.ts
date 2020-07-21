@@ -1,4 +1,4 @@
-import { Controller, Binding } from "@overjs/core";
+import { Controller, Binding } from "../../src/core";
 import Popper from "popper.js";
 
 export const sample = `

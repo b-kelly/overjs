@@ -1,8 +1,8 @@
-import { Controller, Binding } from "@overjs/core";
+import { Controller, Binding } from "../../src/core";
 import { TestSampleController, sample as TestSampleSample } from "./sample";
 import { ModalController, sample as ModalSample } from "./modal";
 import { PopoverController, sample as PopoverSample } from "./popover";
-import * as oJSX from "@overjs/jsx";
+import * as oJSX from "../../src/jsx";
 
 type Mapping = [typeof Controller, string];
 
