@@ -4,6 +4,9 @@ module.exports = {
     parserOptions: {
         tsconfigRootDir: __dirname,
         project: ["./tsconfig.eslint.json"],
+        ecmaFeatures: {
+            jsx: true,
+        },
     },
     plugins: ["@typescript-eslint", "jest"],
     extends: [
@@ -13,4 +16,7 @@ module.exports = {
         "plugin:jest/recommended",
         "prettier/@typescript-eslint",
     ],
+    rules: {
+        "@typescript-eslint/unbound-method": "off",
+    },
 };
