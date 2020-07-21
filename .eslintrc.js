@@ -17,6 +17,8 @@ module.exports = {
         "prettier/@typescript-eslint",
     ],
     rules: {
+        "no-console": "error",
+        "no-alert": "error",
         "@typescript-eslint/unbound-method": "off",
     },
 };
