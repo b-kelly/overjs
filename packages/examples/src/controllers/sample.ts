@@ -1,7 +1,7 @@
 import { Controller } from "@overjs/core";
 
 export let sample = `
-<div ov="test-sample"></div>
+<div js="test-sample"></div>
 `;
 
 export class TestSampleController extends Controller {

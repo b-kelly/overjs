@@ -21,10 +21,10 @@ export class ControllerListController extends oJSX.JsxController {
         return (
             <div>
                 <ul>
-                    {Array.from(types).map(i => <li><a href="#" ov-target="template">{i[1][0].name}</a></li>)}
+                    {Array.from(types).map(i => <li><a href="#" js-target="template">{i[1][0].name}</a></li>)}
                 </ul>
-                <div ov-target="demo"></div>
-                <textarea ov-target="markup"></textarea>
+                <div js-target="demo"></div>
+                <textarea js-target="markup"></textarea>
             </div>
         );
     }

@@ -56,7 +56,7 @@ export class Controller {
      * @param target The target to fetch
      */
     protected target(target: string) {
-        return this.baseElement.querySelector<HTMLElement>(`[ov-target="${target}"]`);
+        return this.baseElement.querySelector<HTMLElement>(`[js-target="${target}"]`);
     }
 
     /**
@@ -64,7 +64,7 @@ export class Controller {
      * @param target The targets to fetch
      */
     protected targets(target: string) {
-        return this.baseElement.querySelectorAll<HTMLElement>(`[ov-target="${target}"]`);
+        return this.baseElement.querySelectorAll<HTMLElement>(`[js-target="${target}"]`);
     }
 
     /**

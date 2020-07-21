@@ -2,13 +2,13 @@ import { Controller, Binding } from "@overjs/core";
 import Popper from "popper.js";
 
 export const sample = `
-<div ov="popover"
+<div js="popover"
     data-placement="bottom-start"
     data-toggle-class="is-selected">
-    <button class="s-btn s-btn__dropdown" role="button" aria-controls="popover-example" ov-target="toggle">
+    <button class="s-btn s-btn__dropdown" role="button" aria-controls="popover-example" js-target="toggle">
         Toggle popover
     </button>
-    <div class="s-popover" id="popover-example" role="menu" ov-target="popover">
+    <div class="s-popover" id="popover-example" role="menu" js-target="popover">
         <div class="s-popover--arrow"></div>
         This is a test popover
     </div>

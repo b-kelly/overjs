@@ -7,7 +7,7 @@ export class Application {
     private registeredHelpers: { [name: string]: (element: HTMLElement, data?: any) => any } = {};
     private started: boolean = false;
 
-    get helpers() {
+    get helpers(): Readonly<Application["registeredHelpers"]> {
         return { ...this.registeredHelpers };
     }
 
@@ -122,7 +122,7 @@ export class Application {
      * @param element The element to search in for applicable elements
      */
     private static getApplicableElements(element: HTMLElement) {
-        return element.querySelectorAll<HTMLElement>('[ov], :not([ov]) [ov-target]');
+        return element.querySelectorAll<HTMLElement>(`[js], :not([js]) [js-target]`);
     }
 
     /**
@@ -142,12 +142,12 @@ export class Application {
             return;
         }
 
-        if (el.hasAttribute('ov')) {
+        if (el.hasAttribute('js')) {
             // tell the handler to hook up a new instance of the controller to this element
             // NOTE: this will automatically enhance all descendants, so no need to do so again
             handler[0].construct(el);
         }
-        else if (el.hasAttribute('ov-target')) {
+        else if (el.hasAttribute('js-target')) {
             // ehances up a single applicable non-root element
             handler[0].connectControllerChild(handler[1], el);
         }
@@ -175,12 +175,12 @@ export class Application {
             return;
         }
 
-        if (el.hasAttribute('ov')) {
+        if (el.hasAttribute('js')) {
             // tell the handler to degrade the root instance on this element
             // NOTE: this will automatically degrade all descendants, so no need to do so again
             handler[0].disconnectElement(el);
         }
-        else if (el.hasAttribute('ov-target')) {
+        else if (el.hasAttribute('js-target')) {
             // degrade a specific non-root element
             handler[0].disconnectControllerChild(handler[1], el);
         }
@@ -193,7 +193,7 @@ export class Application {
 
     private handleAttributeChange(el: HTMLElement, attributeName: string, oldValue: string) {
         let newValue = el.getAttribute(attributeName);
-        if (attributeName === 'ov') {
+        if (attributeName === 'js') {
             if (oldValue && oldValue !== newValue) {
                 //this.degradeElement(el); TODO!
 
@@ -205,7 +205,7 @@ export class Application {
                 this.enhanceElement(el);
             }
         }
-        else if (attributeName == 'ov-target') {
+        else if (attributeName == 'js-target') {
             //TODO!
         }
     }
@@ -217,13 +217,13 @@ export class Application {
     private getHandlerForElement(el: HTMLElement): [ControllerManager, HTMLElement] {
         // attempt to find the closest controller element
         // NOTE: this includes the given element itself as well
-        let parentController = el.closest('[ov]') as HTMLElement;
+        let parentController = el.closest('[js]') as HTMLElement;
         if (!parentController) {
             // TODO should we throw?
             return null;
         }
 
-        let controllerName = parentController.getAttribute('ov');
+        let controllerName = parentController.getAttribute('js');
 
         // if this controller is not registered, then there's nothing to do
         if (!this.controllerHandlers.has(controllerName)) {
@@ -390,10 +390,10 @@ class ControllerManager {
      */
     private bindTargetEvents(bindings: InternalBindingMap, el: HTMLElement) {
         // get all the bindable elements from this element's decendants
-        let targets = Array.from(el.querySelectorAll<HTMLElement>('[ov-target]'));
+        let targets = Array.from(el.querySelectorAll<HTMLElement>('[js-target]'));
 
         // if the base element is a target, initialize it too
-        if (el.hasAttribute('ov-target')) {
+        if (el.hasAttribute('js-target')) {
             targets.push(el);
         }
 
@@ -404,7 +404,7 @@ class ControllerManager {
 
         // bind each targets' event to the bound function
         targets.forEach((t: HTMLElement) => {
-            let target = t.getAttribute('ov-target');
+            let target = t.getAttribute('js-target');
             let binding = bindings.get(target);
 
             // if there is no event binding for this target, skip it
@@ -424,16 +424,16 @@ class ControllerManager {
      */
     private unbindTargets(bindings: InternalBindingMap, el: HTMLElement) {
         // get all the bindable elements from this element's decendants
-        let targets = Array.from(el.querySelectorAll<HTMLElement>('[ov-target]'));
+        let targets = Array.from(el.querySelectorAll<HTMLElement>('[js-target]'));
 
         // if the base element is a target, initialize it too
-        if (el.hasAttribute('ov-target')) {
+        if (el.hasAttribute('js-target')) {
             targets.push(el);
         }
 
         // unbind each targets' event
         targets.forEach(t => {
-            let target = t.getAttribute('ov-target');
+            let target = t.getAttribute('js-target');
             let binding = bindings.get(target);
 
             // this target isn't bound, so nothing to unbind
