@@ -30,24 +30,24 @@ export class ModalController extends Controller {
             instance.show();
         },
 
-        hideModal(instance: ModalController) {
+        hideModal(instance: ModalController): void {
             instance.hide();
         },
     };
 
-    connect() {
+    connect(): void {
         this.validate();
     }
 
-    disconnect() {
+    disconnect(): void {
         this.unbindHideEvents();
     }
 
-    show() {
+    show(): void {
         this.toggle(true);
     }
 
-    hide() {
+    hide(): void {
         this.toggle(false);
     }
 
@@ -251,11 +251,11 @@ export class ModalController extends Controller {
         return initialFocus;
     }
 
-    static show(this: ModalController, e: Event) {
+    static show(this: ModalController): void {
         this.show();
     }
 
-    static hide(this: ModalController, e: Event) {
+    static hide(this: ModalController): void {
         this.hide();
     }
 }

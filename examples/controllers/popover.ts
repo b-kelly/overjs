@@ -28,13 +28,13 @@ export class PopoverController extends Controller {
 
     private popper: Popper;
 
-    get isVisible() {
+    get isVisible(): boolean {
         const popover = this.target("popover");
 
         return popover && popover.classList.contains("is-visible");
     }
 
-    connect() {
+    connect(): void {
         this.validate();
 
         if (this.isVisible) {
@@ -43,7 +43,7 @@ export class PopoverController extends Controller {
         }
     }
 
-    disconnect() {
+    disconnect(): void {
         this.toggle(false);
         if (this.popper) {
             this.popper.destroy();
@@ -51,7 +51,7 @@ export class PopoverController extends Controller {
         }
     }
 
-    public toggle(show?: boolean) {
+    public toggle(show?: boolean): void {
         const currentlyVisible = this.isVisible;
         let toShow = show;
 
@@ -156,7 +156,7 @@ export class PopoverController extends Controller {
         });
     }
 
-    public static toggle(this: PopoverController, e: Event) {
+    public static toggle(this: PopoverController): void {
         this.toggle();
     }
 }

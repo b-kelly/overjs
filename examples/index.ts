@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { JsxApplication } from "../src/jsx";
 import { TestSampleController } from "./controllers/sample";
 import { ControllerListController } from "./controllers/controllerList";
@@ -18,11 +19,12 @@ app.start();
 // @ts-ignore;
 window.helpers = app.helpers;
 //@ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 window.helpers["getControllerForElement"] = app.getControllerForElement.bind(
     app
 );
 
-document.querySelector(".js-disconnect-all").addEventListener("click", (e) => {
+document.querySelector(".js-disconnect-all").addEventListener("click", () => {
     app.destroy();
 });
 
