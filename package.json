@@ -5,16 +5,26 @@
   "private": true,
   "scripts": {
     "start": "webpack-dev-server --config webpack.develop.js",
-    "build": "webpack -p"
+    "build": "webpack -p",
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@stackoverflow/stacks": "^0.53.0",
+    "@types/jest": "^26.0.5",
+    "@typescript-eslint/eslint-plugin": "^3.7.0",
+    "@typescript-eslint/parser": "^3.7.0",
     "css-loader": "^3.6.0",
+    "eslint": "^7.5.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-jest": "^23.18.0",
     "html-webpack-plugin": "^4.3.0",
+    "jest": "^26.1.0",
     "mini-css-extract-plugin": "^0.9.0",
     "popper.js": "^1.16.1",
+    "prettier": "^2.0.5",
+    "ts-jest": "^26.1.3",
     "ts-loader": "^8.0.1",
     "typescript": "^3.9.7",
     "webpack": "^4.43.0",
