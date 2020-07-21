@@ -29,7 +29,7 @@ export class PopoverController extends Controller {
     private popper: Popper;
 
     get isVisible() {
-        var popover = this.target("popover");
+        const popover = this.target("popover");
 
         return popover && popover.classList.contains("is-visible");
     }
@@ -52,7 +52,7 @@ export class PopoverController extends Controller {
     }
 
     public toggle(show?: boolean) {
-        let currentlyVisible = this.isVisible;
+        const currentlyVisible = this.isVisible;
         let toShow = show;
 
         if (typeof show === "undefined") {
@@ -63,7 +63,7 @@ export class PopoverController extends Controller {
             return;
         }
 
-        let triggeredEvent = this.triggerEvent(toShow ? "show" : "hide");
+        const triggeredEvent = this.triggerEvent(toShow ? "show" : "hide");
 
         if (triggeredEvent.defaultPrevented) {
             return;
@@ -73,7 +73,7 @@ export class PopoverController extends Controller {
             this.initializePopper();
         }
 
-        let popover = this.target("popover");
+        const popover = this.target("popover");
 
         popover.classList.toggle("is-visible", toShow);
 
@@ -96,8 +96,8 @@ export class PopoverController extends Controller {
     }
 
     private initializePopper() {
-        let popover = this.target("popover");
-        let referenceElement = this.target("toggle");
+        const popover = this.target("popover");
+        const referenceElement = this.target("toggle");
         this.popper = new Popper(referenceElement, popover, {
             eventsEnabled: this.isVisible,
         });
@@ -123,8 +123,8 @@ export class PopoverController extends Controller {
     }
 
     private hideOnOutsideClick(e: MouseEvent) {
-        let target = <Node>e.target;
-        var popover = this.target("popover");
+        const target = <Node>e.target;
+        const popover = this.target("popover");
 
         if (!popover?.contains(target)) {
             PopoverController.toggle.call(this, false);
@@ -148,9 +148,9 @@ export class PopoverController extends Controller {
             return;
         }
 
-        let referenceElement = this.target("toggle");
+        const referenceElement = this.target("toggle");
 
-        var cl = referenceElement.classList;
+        const cl = referenceElement.classList;
         this.data.toggleClass!.split(/\s+/).forEach(function (cls: string) {
             cl.toggle(cls, show);
         });

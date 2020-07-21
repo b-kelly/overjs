@@ -40,13 +40,13 @@ export class ControllerListController extends oJSX.JsxController {
 
     private static logOnClick(this: ControllerListController, e: Event) {
         //TODO get rid of 'this:'?
-        var controller = (e.target as HTMLElement).textContent;
-        var mapping = types.get(controller);
+        const controller = (e.target as HTMLElement).textContent;
+        const mapping = types.get(controller);
 
-        var container = this.target("demo");
+        const container = this.target("demo");
         container.innerHTML = mapping[1];
 
-        var markup = this.target("markup") as HTMLTextAreaElement;
+        const markup = this.target("markup") as HTMLTextAreaElement;
         markup.value = mapping[1];
     }
 }

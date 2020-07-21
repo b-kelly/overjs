@@ -1,6 +1,6 @@
 import { Controller, Binding } from "../../src/core";
 
-export let sample = `
+export const sample = `
 <div js="modal">
     <button type="button" class="s-btn s-btn__primary" js-target="show">Show modal</button>
     <aside class="s-modal" js-target="modal" aria-hidden="true">
@@ -57,8 +57,8 @@ export class ModalController extends Controller {
 
     private toggle(show?: boolean | undefined) {
         let toShow = show;
-        let modal = this.target("modal");
-        let isVisible = modal.getAttribute("aria-hidden") === "false";
+        const modal = this.target("modal");
+        const isVisible = modal.getAttribute("aria-hidden") === "false";
 
         // if we're letting the class toggle, we need to figure out if the popover is visible manually
         if (typeof toShow === "undefined") {
@@ -70,10 +70,10 @@ export class ModalController extends Controller {
             return;
         }
 
-        let returnElement = <HTMLElement>this.target("returnElement");
+        let returnElement = this.target("returnElement");
 
         // show/hide events trigger before toggling the class
-        var triggeredEvent = this.triggerEvent(
+        const triggeredEvent = this.triggerEvent(
             toShow ? "show" : "hide",
             { returnElement: returnElement },
             modal
@@ -96,8 +96,8 @@ export class ModalController extends Controller {
         }
 
         // check for transitionend support
-        var supportsTransitionEnd =
-            (<HTMLElement>modal).ontransitionend !== undefined;
+        const supportsTransitionEnd =
+            (modal).ontransitionend !== undefined;
 
         // shown/hidden events trigger after toggling the class
         if (supportsTransitionEnd) {
@@ -136,7 +136,7 @@ export class ModalController extends Controller {
             return;
         }
 
-        let modal = this.target("modal");
+        const modal = this.target("modal");
 
         //TODO prefix event
         modal.addEventListener(
@@ -156,7 +156,7 @@ export class ModalController extends Controller {
             return;
         }
 
-        let modal = this.target("modal");
+        const modal = this.target("modal");
 
         //TODO prefix event
         modal.addEventListener(
@@ -169,8 +169,8 @@ export class ModalController extends Controller {
     }
 
     private hideOnOutsideClick(e: MouseEvent) {
-        let target = <Node>e.target;
-        let modal = this.target("modal");
+        const target = <Node>e.target;
+        const modal = this.target("modal");
 
         if (!modal.querySelector(".s-modal--dialog")?.contains(target)) {
             ModalController.hide.call(this, e);
@@ -190,10 +190,10 @@ export class ModalController extends Controller {
     }
 
     private handleFocusableElements() {
-        let modal = this.target("modal");
+        const modal = this.target("modal");
 
         // get all tabbable items
-        var allTabbables = Array.from(
+        const allTabbables = Array.from(
             modal.querySelectorAll<HTMLElement>(
                 "[href], input, select, textarea, button, [tabindex]"
             )
@@ -205,9 +205,9 @@ export class ModalController extends Controller {
             return;
         }
 
-        var initialFocus = allTabbables[0];
+        let initialFocus = allTabbables[0];
 
-        var intialFocusTarget = this.target("initialFocus");
+        const intialFocusTarget = this.target("initialFocus");
         if (intialFocusTarget) {
             initialFocus = intialFocusTarget;
         }
@@ -224,8 +224,8 @@ export class ModalController extends Controller {
             { once: true }
         );
 
-        var firstTabbable = <HTMLElement>allTabbables[0];
-        var lastTabbable = <HTMLElement>allTabbables[allTabbables.length - 1];
+        const firstTabbable = allTabbables[0];
+        const lastTabbable = allTabbables[allTabbables.length - 1];
 
         // if the first or last item is tabbed over, ensure that the focus "loops" back to the end of the array instead of leaving the modal
         this.bindDocumentEvent("keydown", "trapTab", (e: KeyboardEvent) => {

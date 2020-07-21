@@ -6,7 +6,7 @@ import { PopoverController } from "./controllers/popover";
 
 import "@stackoverflow/stacks/dist/css/stacks.min.css";
 
-var app = new JsxApplication("controller-list");
+const app = new JsxApplication("controller-list");
 app.register(TestSampleController);
 app.register(ControllerListController);
 app.register(ModalController);
