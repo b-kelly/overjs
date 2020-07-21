@@ -13,12 +13,12 @@ export function createElement(type: string | JsxController, props: { [key: strin
 
     if (props) {
         Object.keys(props).forEach(key => {
-            let val: any = props[key];
+            const val: any = props[key];
             // boolean props just set the attribute w/ no value
             if (val === true) {
                 rootElement.setAttribute(key, '');
             }
-            else if (!!val) {
+            else if (val) {
                 rootElement.setAttribute(key, val);
             }
         });
@@ -31,7 +31,7 @@ export function createElement(type: string | JsxController, props: { [key: strin
     return rootElement;
 }
 
-let appendChildNode = function(root: Node, child: any) {
+const appendChildNode = function(root: Node, child: any) {
     let el: Node;
 
     if (typeof child === "string") {

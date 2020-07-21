@@ -5,7 +5,7 @@ export class Application {
     private controllerHandlers = new Map<string, ControllerManager>();
     private observer: Observer;
     private registeredHelpers: { [name: string]: (element: HTMLElement, data?: any) => any } = {};
-    private started: boolean = false;
+    private started = false;
 
     get helpers(): Readonly<Application["registeredHelpers"]> {
         return { ...this.registeredHelpers };
@@ -35,7 +35,7 @@ export class Application {
         }
 
         // changes a controller from "TestSampleController" to "test-sample"
-        var simplifiedName = controller.domName();
+        const simplifiedName = controller.domName();
 
         if (!simplifiedName) {
             throw 'Unable to initialize controller with bad name: ' + controller.name;
@@ -60,14 +60,14 @@ export class Application {
      * @param controller The simplified name of the controller
      */
     getControllerForElement(element: HTMLElement, controller: string) {
-        let handler = this.controllerHandlers.get(controller);
+        const handler = this.controllerHandlers.get(controller);
 
         // the given controller is not registered with this application
         if (!handler) {
             return null;
         }
 
-        let instance = handler.findInstanceForElement(element);
+        const instance = handler.findInstanceForElement(element);
 
         // no specific instance registered for the given element
         if (!instance || !instance.controller) {
@@ -87,8 +87,8 @@ export class Application {
         Object.keys(helpers).forEach(key => {
             // create a function that does the heavy lifting of getting the controller from the passed element
             // binding to the controller and then calling the helper on it, passing along all the necessary data
-            let boundHelper = (element: HTMLElement, data: any) => {
-                let controller = this.getControllerForElement(element, simplifiedName);
+            const boundHelper = (element: HTMLElement, data: any) => {
+                const controller = this.getControllerForElement(element, simplifiedName);
 
                 if (!controller) {
                     throw 'Unable to find ' + simplifiedName + ' controller for element';
@@ -135,7 +135,7 @@ export class Application {
             return;
         }
 
-        var handler = this.getHandlerForElement(el);
+        const handler = this.getHandlerForElement(el);
 
         if (!handler || !handler[0]) {
             // TODO should we throw here?
@@ -153,7 +153,7 @@ export class Application {
         }
         else {
             // get all applicable descendants and enhance them
-            let elements = Application.getApplicableElements(el);
+            const elements = Application.getApplicableElements(el);
             elements.forEach(e => this.enhanceElement(e));
         }
     }
@@ -168,7 +168,7 @@ export class Application {
             return;
         }
 
-        var handler = this.getHandlerForElement(el);
+        const handler = this.getHandlerForElement(el);
 
         if (!handler || !handler[0]) {
             // TODO should we throw here?
@@ -186,13 +186,13 @@ export class Application {
         }
         else {
             // get all applicable descendants and degrade them
-            let elements = Application.getApplicableElements(el);
+            const elements = Application.getApplicableElements(el);
             elements.forEach(e => this.degradeElement(e));
         }
     }
 
     private handleAttributeChange(el: HTMLElement, attributeName: string, oldValue: string) {
-        let newValue = el.getAttribute(attributeName);
+        const newValue = el.getAttribute(attributeName);
         if (attributeName === 'js') {
             if (oldValue && oldValue !== newValue) {
                 //this.degradeElement(el); TODO!
@@ -217,20 +217,20 @@ export class Application {
     private getHandlerForElement(el: HTMLElement): [ControllerManager, HTMLElement] {
         // attempt to find the closest controller element
         // NOTE: this includes the given element itself as well
-        let parentController = el.closest('[js]') as HTMLElement;
+        const parentController = el.closest('[js]');
         if (!parentController) {
             // TODO should we throw?
             return null;
         }
 
-        let controllerName = parentController.getAttribute('js');
+        const controllerName = parentController.getAttribute('js');
 
         // if this controller is not registered, then there's nothing to do
         if (!this.controllerHandlers.has(controllerName)) {
             return null;
         }
 
-        let controller = this.controllerHandlers.get(controllerName);
+        const controller = this.controllerHandlers.get(controllerName);
 
         return [controller, parentController];
     }
@@ -272,8 +272,8 @@ class ControllerManager {
         }
 
         // create a new controller of our stored type with this element as the baseElement
-        let controller = new this.controllerType(el);
-        let instance = {
+        const controller = new this.controllerType(el);
+        const instance = {
             controller: controller,
             bindings: new InternalBindingMap(controller, this.controllerType.bindings)
         };
@@ -296,7 +296,7 @@ class ControllerManager {
      * @param childElement The child to connect
      */
     connectControllerChild(controllerElement: HTMLElement, childElement: HTMLElement) {
-        let instance = this.findInstanceForElement(controllerElement);
+        const instance = this.findInstanceForElement(controllerElement);
 
         if (!instance) {
             // TODO throw?
@@ -312,7 +312,7 @@ class ControllerManager {
      * @param el 
      */
     disconnectElement(el: HTMLElement) {
-        let instance = this.findInstanceForElement(el);
+        const instance = this.findInstanceForElement(el);
 
         if (!instance) {
             // TODO throw?
@@ -320,7 +320,7 @@ class ControllerManager {
         }
 
         // remove the instance from the saved instances
-        var index = this.instances.indexOf(instance);
+        const index = this.instances.indexOf(instance);
         this.instances.splice(index, 1);
 
         // disconnect the controller from the element
@@ -333,7 +333,7 @@ class ControllerManager {
      * @param childElement The child to disconnect
      */
     disconnectControllerChild(controllerElement: HTMLElement, childElement: HTMLElement) {
-        let instance = this.findInstanceForElement(controllerElement);
+        const instance = this.findInstanceForElement(controllerElement);
 
         if (!instance) {
             // TODO throw?
@@ -364,7 +364,7 @@ class ControllerManager {
 
         // TODO can we do better than this?
         // scan through every created instance and check if the passed element is the same as the instance's baseElement
-        for (let i of this.instances) {
+        for (const i of this.instances) {
             if (i.controller.baseElement.isEqualNode(baseElement)) {
                 instance = i;
                 break;
@@ -390,7 +390,7 @@ class ControllerManager {
      */
     private bindTargetEvents(bindings: InternalBindingMap, el: HTMLElement) {
         // get all the bindable elements from this element's decendants
-        let targets = Array.from(el.querySelectorAll<HTMLElement>('[js-target]'));
+        const targets = Array.from(el.querySelectorAll<HTMLElement>('[js-target]'));
 
         // if the base element is a target, initialize it too
         if (el.hasAttribute('js-target')) {
@@ -404,8 +404,8 @@ class ControllerManager {
 
         // bind each targets' event to the bound function
         targets.forEach((t: HTMLElement) => {
-            let target = t.getAttribute('js-target');
-            let binding = bindings.get(target);
+            const target = t.getAttribute('js-target');
+            const binding = bindings.get(target);
 
             // if there is no event binding for this target, skip it
             if (!binding) {
@@ -424,7 +424,7 @@ class ControllerManager {
      */
     private unbindTargets(bindings: InternalBindingMap, el: HTMLElement) {
         // get all the bindable elements from this element's decendants
-        let targets = Array.from(el.querySelectorAll<HTMLElement>('[js-target]'));
+        const targets = Array.from(el.querySelectorAll<HTMLElement>('[js-target]'));
 
         // if the base element is a target, initialize it too
         if (el.hasAttribute('js-target')) {
@@ -433,8 +433,8 @@ class ControllerManager {
 
         // unbind each targets' event
         targets.forEach(t => {
-            let target = t.getAttribute('js-target');
-            let binding = bindings.get(target);
+            const target = t.getAttribute('js-target');
+            const binding = bindings.get(target);
 
             // this target isn't bound, so nothing to unbind
             if (!binding) {
@@ -464,12 +464,12 @@ class InternalBindingMap {
      */
     private bind(caller: Controller, bindings: BindingMap) {
         Object.keys(bindings).forEach(k => {
-            var bindingSet = bindings[k];
+            const bindingSet = bindings[k];
 
             // wrap the bound function so that if it returns true/undefined, then prevent default
-            let boundFunction = (e: Event) => {
+            const boundFunction = (e: Event) => {
                 // make sure the function call is bound to the caller so `this` is correct
-                var result = bindingSet[1].bind(caller)(e);
+                const result = bindingSet[1].bind(caller)(e);
                 if (result || typeof result === 'undefined') {
                     e.preventDefault();
                     e.stopPropagation();

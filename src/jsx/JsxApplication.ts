@@ -13,7 +13,7 @@ export class JsxApplication extends Application {
     // TODO document
     start(callback: () => void | null = null) {
         super.start(() => {
-            let root = document.querySelector<HTMLElement>(this.selector);
+            const root = document.querySelector<HTMLElement>(this.selector);
             this.render(root);
 
             if (callback) {
@@ -24,16 +24,16 @@ export class JsxApplication extends Application {
 
     // TODO document
     render(root: HTMLElement) {
-        let nodeName = root.nodeName;
-        let controllerName = Controller.getDomName(nodeName);
+        const nodeName = root.nodeName;
+        const controllerName = Controller.getDomName(nodeName);
         root.setAttribute('js', controllerName);
-        let controller = this.getControllerForElement(root, controllerName) as JsxController;
+        const controller = this.getControllerForElement(root, controllerName) as JsxController;
 
         if (!controller) {
             return;
         }
 
-        let content = controller.render();
+        const content = controller.render();
         root.appendChild(content);
     }
 }

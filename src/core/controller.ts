@@ -75,7 +75,7 @@ export class Controller {
      */
     protected triggerEvent<T>(eventName: string, detail?: T, optionalElement?: Element) {
         const namespacedName = Controller.getDomName(this['constructor'].name) + ':' + eventName;
-        var event : CustomEvent<T> = new CustomEvent(namespacedName, {bubbles: true, cancelable: true, detail: detail});
+        const event : CustomEvent<T> = new CustomEvent(namespacedName, {bubbles: true, cancelable: true, detail: detail});
         (optionalElement || this.baseElement).dispatchEvent(event);
         return event;
     }
@@ -87,7 +87,7 @@ export class Controller {
      * @param listener The event listener for this event
      */
     protected bindDocumentEvent(eventType: string, key: string, listener: EventListener) {
-        let boundFunction = this.boundDocumentMethods[key] || listener.bind(this);
+        const boundFunction = this.boundDocumentMethods[key] || listener.bind(this);
 
         this.boundDocumentMethods[key] = boundFunction;
 
@@ -100,7 +100,7 @@ export class Controller {
      * @param key The unique key used when binding this event originally
      */
     protected unbindDocumentEvent(eventType: string, key: string) {
-        let boundFunction = this.boundDocumentMethods[key];
+        const boundFunction = this.boundDocumentMethods[key];
 
         if (!boundFunction) {
             return;
