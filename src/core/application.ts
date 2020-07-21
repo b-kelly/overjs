@@ -234,7 +234,7 @@ export class Application {
     ): [ControllerManager, HTMLElement] {
         // attempt to find the closest controller element
         // NOTE: this includes the given element itself as well
-        const parentController = el.closest("[js]");
+        const parentController = el.closest<HTMLElement>("[js]");
         if (!parentController) {
             // TODO should we throw?
             return null;
