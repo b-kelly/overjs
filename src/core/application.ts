@@ -17,13 +17,9 @@ export class Application {
      * Instructs the application to start dom observation and hook up all registered controllers
      */
     start(): Promise<void> {
-        return new Promise((resolve) => {
-            this.domReady(() => {
-                this.hookup();
-                this.started = true;
-
-                resolve();
-            });
+        return this.domReady().then(() => {
+            this.hookup();
+            this.started = true;
         });
     }
 
@@ -267,12 +263,14 @@ export class Application {
      * Calls the callback when the dom is ready for interaction
      * @param callback the function to call when the dom is ready
      */
-    private domReady(callback: (e: Event | null) => void) {
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", callback);
-        } else {
-            callback(null);
-        }
+    private domReady() {
+        return new Promise((resolve) => {
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", () => resolve());
+            } else {
+                resolve();
+            }
+        });
     }
 }
 
