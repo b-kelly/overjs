@@ -58,6 +58,11 @@ export class ModalController extends Controller {
     private toggle(show?: boolean | undefined) {
         let toShow = show;
         const modal = this.target("modal");
+
+        if (!modal) {
+            return;
+        }
+
         const isVisible = modal.getAttribute("aria-hidden") === "false";
 
         // if we're letting the class toggle, we need to figure out if the popover is visible manually
@@ -131,12 +136,16 @@ export class ModalController extends Controller {
         this.unbindDocumentEvent("keydown", "trapTab");
     }
 
-    private focusReturnElement(returnElement: HTMLElement) {
+    private focusReturnElement(returnElement: HTMLElement | null) {
         if (!returnElement) {
             return;
         }
 
         const modal = this.target("modal");
+
+        if (!modal) {
+            return;
+        }
 
         //TODO prefix event
         modal.addEventListener(
@@ -158,6 +167,10 @@ export class ModalController extends Controller {
 
         const modal = this.target("modal");
 
+        if (!modal) {
+            return;
+        }
+
         //TODO prefix event
         modal.addEventListener(
             "modal:hidden",
@@ -172,8 +185,12 @@ export class ModalController extends Controller {
         const target = <Node>e.target;
         const modal = this.target("modal");
 
+        if (!modal) {
+            return;
+        }
+
         if (!modal.querySelector(".s-modal--dialog")?.contains(target)) {
-            ModalController.hide.call(this, e);
+            ModalController.hide.call(this);
         }
 
         return false;
@@ -184,13 +201,17 @@ export class ModalController extends Controller {
             return true;
         }
 
-        ModalController.hide.call(this, e);
+        ModalController.hide.call(this);
 
         return false;
     }
 
     private handleFocusableElements() {
         const modal = this.target("modal");
+
+        if (!modal) {
+            return;
+        }
 
         // get all tabbable items
         const allTabbables = Array.from(

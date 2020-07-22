@@ -26,12 +26,12 @@ export class PopoverController extends Controller {
         },
     };
 
-    private popper: Popper;
+    private popper: Popper | null = null;
 
     get isVisible(): boolean {
         const popover = this.target("popover");
 
-        return popover && popover.classList.contains("is-visible");
+        return popover ? popover.classList.contains("is-visible") : false;
     }
 
     connect(): void {
@@ -75,6 +75,10 @@ export class PopoverController extends Controller {
 
         const popover = this.target("popover");
 
+        if (!popover || !this.popper) {
+            return;
+        }
+
         popover.classList.toggle("is-visible", toShow);
 
         if (toShow) {
@@ -98,6 +102,11 @@ export class PopoverController extends Controller {
     private initializePopper() {
         const popover = this.target("popover");
         const referenceElement = this.target("toggle");
+
+        if (!referenceElement || !popover) {
+            return;
+        }
+
         this.popper = new Popper(referenceElement, popover, {
             eventsEnabled: this.isVisible,
         });
@@ -127,7 +136,7 @@ export class PopoverController extends Controller {
         const popover = this.target("popover");
 
         if (!popover?.contains(target)) {
-            PopoverController.toggle.call(this, false);
+            PopoverController.toggle.call(this);
         }
 
         return false;
@@ -138,7 +147,7 @@ export class PopoverController extends Controller {
             return true;
         }
 
-        PopoverController.toggle.call(this, false);
+        PopoverController.toggle.call(this);
 
         return false;
     }
@@ -149,6 +158,10 @@ export class PopoverController extends Controller {
         }
 
         const referenceElement = this.target("toggle");
+
+        if (!referenceElement) {
+            return;
+        }
 
         const cl = referenceElement.classList;
         this.data.toggleClass!.split(/\s+/).forEach(function (cls: string) {

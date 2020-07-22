@@ -41,9 +41,23 @@ export class ControllerListController extends oJSX.JsxController {
     private static logOnClick(this: ControllerListController, e: Event) {
         //TODO get rid of 'this:'?
         const controller = (e.target as HTMLElement).textContent;
+
+        if (!controller) {
+            return;
+        }
+
         const mapping = types.get(controller);
 
+        if (!mapping) {
+            return;
+        }
+
         const container = this.target("demo");
+
+        if (!container) {
+            return;
+        }
+
         container.innerHTML = mapping[1];
 
         const markup = this.target("markup") as HTMLTextAreaElement;

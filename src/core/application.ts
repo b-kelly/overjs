@@ -1,4 +1,4 @@
-import { Controller, BindingMap, Binding, HelperMap } from "./controller";
+import { Controller, ControllerConstructor, BindingMap, Binding, HelperMap } from "./controller";
 import { Observer } from "./observer";
 
 export class Application {
@@ -27,7 +27,7 @@ export class Application {
      * Registers a controller with this application, which connects its helpers and allows it to be hooked up to the dom
      * @param controller The controller class to register with this application instance
      */
-    register(controller: typeof Controller): void {
+    register<T extends Controller>(controller: ControllerConstructor<T>): void {
         if (this.started) {
             throw "Unable to register a controller after the application has been started";
         }
@@ -284,11 +284,11 @@ type ControllerInstance = {
 /**
  * Helper construct that manages all instances of a single controller type
  */
-class ControllerManager {
-    private controllerType: typeof Controller;
+class ControllerManager<T extends Controller = any> {
+    private controllerType: ControllerConstructor<T>;
     private instances: ControllerInstance[] = [];
 
-    constructor(type: typeof Controller) {
+    constructor(type: ControllerConstructor<T>) {
         this.controllerType = type;
     }
 

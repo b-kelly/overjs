@@ -1,4 +1,12 @@
-export class Controller {
+export interface ControllerConstructor<T extends Controller> {
+    bindings: BindingMap;
+    helpers: HelperMap<T>;
+    new(el: HTMLElement): T;
+    domName(): string;
+    domName(name: string): string;
+}
+
+export abstract class Controller {
     /**
      * A map of all the bindings attached to a controller's targets, keyed on the target name
      */
@@ -7,7 +15,7 @@ export class Controller {
     /**
      * A map of all the helper functions this controller exposes, keyed on the exposed helper's name
      */
-    static helpers: HelperMap<never> = {};
+    static helpers: HelperMap = {};
 
     /**
      * The base element this controller is attached to
@@ -99,10 +107,10 @@ export class Controller {
      * @param key The unique key to reference this event for unbinding later
      * @param listener The event listener for this event
      */
-    protected bindDocumentEvent(
+    protected bindDocumentEvent<T extends Event>(
         eventType: string,
         key: string,
-        listener: EventListener
+        listener: (evt: T) => boolean | void
     ): void {
         const boundFunction =
             this.boundDocumentMethods[key] || listener.bind(this);
@@ -153,16 +161,16 @@ export class Controller {
 /**
  * Describes the shape of a controller binding value
  */
-export type Binding = [
+export type Binding<T extends Controller = any> = [
     keyof HTMLElementEventMap,
-    (this: Controller, evt: Event) => boolean | undefined
+    (this: T, evt: Event) => boolean | undefined
 ];
 
 /**
  * Describes the shape of all the helper functions on a controller
  */
-// TODO correct use of never?
-export interface HelperMap<T extends Controller = never> {
+// TODO any?
+export interface HelperMap<T extends Controller = any> {
     //TODO instead of any, maybe do some tricks with generics?
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [helperName: string]: (instance: T, ...data: any[]) => any;
@@ -171,6 +179,6 @@ export interface HelperMap<T extends Controller = never> {
 /**
  * Describes the shape of all bindings on a controller
  */
-export interface BindingMap {
-    [targetName: string]: Binding;
+export interface BindingMap<T extends Controller = any> {
+    [targetName: string]: Binding<T>;
 }

@@ -13,19 +13,17 @@ app.register(ControllerListController);
 app.register(ModalController);
 app.register(PopoverController);
 
-app.start();
+void app.start().then(() => {
+    //TODO expose better
+    // @ts-ignore;
+    window.helpers = app.helpers;
+    //@ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    window.helpers["getControllerForElement"] = app.getControllerForElement.bind(
+        app
+    );
 
-//TODO expose better
-// @ts-ignore;
-window.helpers = app.helpers;
-//@ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-window.helpers["getControllerForElement"] = app.getControllerForElement.bind(
-    app
-);
-
-document.querySelector(".js-disconnect-all").addEventListener("click", () => {
-    app.destroy();
+    document.querySelector(".js-disconnect-all")?.addEventListener("click", () => {
+        app.destroy();
+    });
 });
-
-console.log("hello docs!");
