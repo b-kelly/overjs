@@ -60,10 +60,28 @@ export abstract class Controller {
     }
 
     /**
-     * Returns the first element for the given target
+     * Returns the first element for the given target; will throw if target is not found
+     * NOTE: This deliberately throws if the element isn't found for ease of programming w/ strictNulls turned on
+     * If you want to check a target that may or may not exist, use @see safeTarget instead
      * @param target The target to fetch
      */
-    protected target(target: string): HTMLElement | null {
+    protected target(target: string): HTMLElement {
+        const el = this.baseElement.querySelector<HTMLElement>(
+            `[js-target="${target}"]`
+        );
+
+        if (!el) {
+            throw "Unable to find target: " + target;
+        }
+
+        return el;
+    }
+
+    /**
+     * Returns the first element for the given target or null if it isn't found
+     * @param target The target to fetch
+     */
+    protected safeTarget(target: string): HTMLElement | null {
         return this.baseElement.querySelector<HTMLElement>(
             `[js-target="${target}"]`
         );

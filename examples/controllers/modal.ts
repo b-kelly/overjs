@@ -59,10 +59,6 @@ export class ModalController extends Controller {
         let toShow = show;
         const modal = this.target("modal");
 
-        if (!modal) {
-            return;
-        }
-
         const isVisible = modal.getAttribute("aria-hidden") === "false";
 
         // if we're letting the class toggle, we need to figure out if the popover is visible manually
@@ -75,7 +71,7 @@ export class ModalController extends Controller {
             return;
         }
 
-        let returnElement = this.target("returnElement");
+        let returnElement = this.safeTarget("returnElement");
 
         // show/hide events trigger before toggling the class
         const triggeredEvent = this.triggerEvent(
@@ -143,10 +139,6 @@ export class ModalController extends Controller {
 
         const modal = this.target("modal");
 
-        if (!modal) {
-            return;
-        }
-
         //TODO prefix event
         modal.addEventListener(
             "modal:hidden",
@@ -167,10 +159,6 @@ export class ModalController extends Controller {
 
         const modal = this.target("modal");
 
-        if (!modal) {
-            return;
-        }
-
         //TODO prefix event
         modal.addEventListener(
             "modal:hidden",
@@ -184,10 +172,6 @@ export class ModalController extends Controller {
     private hideOnOutsideClick(e: MouseEvent) {
         const target = <Node>e.target;
         const modal = this.target("modal");
-
-        if (!modal) {
-            return;
-        }
 
         if (!modal.querySelector(".s-modal--dialog")?.contains(target)) {
             ModalController.hide.call(this);
@@ -209,10 +193,6 @@ export class ModalController extends Controller {
     private handleFocusableElements() {
         const modal = this.target("modal");
 
-        if (!modal) {
-            return;
-        }
-
         // get all tabbable items
         const allTabbables = Array.from(
             modal.querySelectorAll<HTMLElement>(
@@ -228,7 +208,7 @@ export class ModalController extends Controller {
 
         let initialFocus = allTabbables[0];
 
-        const intialFocusTarget = this.target("initialFocus");
+        const intialFocusTarget = this.safeTarget("initialFocus");
         if (intialFocusTarget) {
             initialFocus = intialFocusTarget;
         }

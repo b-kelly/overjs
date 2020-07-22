@@ -75,19 +75,15 @@ export class PopoverController extends Controller {
 
         const popover = this.target("popover");
 
-        if (!popover || !this.popper) {
-            return;
-        }
-
         popover.classList.toggle("is-visible", toShow);
 
         if (toShow) {
-            this.popper.enableEventListeners();
+            this.popper?.enableEventListeners();
             this.scheduleUpdate();
             this.bindDocumentEvents();
             this.toggleOptionalClasses(true);
         } else {
-            this.popper.disableEventListeners();
+            this.popper?.disableEventListeners();
             this.unbindDocumentEvents();
             this.toggleOptionalClasses(false);
         }
@@ -102,10 +98,6 @@ export class PopoverController extends Controller {
     private initializePopper() {
         const popover = this.target("popover");
         const referenceElement = this.target("toggle");
-
-        if (!referenceElement || !popover) {
-            return;
-        }
 
         this.popper = new Popper(referenceElement, popover, {
             eventsEnabled: this.isVisible,
@@ -158,10 +150,6 @@ export class PopoverController extends Controller {
         }
 
         const referenceElement = this.target("toggle");
-
-        if (!referenceElement) {
-            return;
-        }
 
         const cl = referenceElement.classList;
         this.data.toggleClass!.split(/\s+/).forEach(function (cls: string) {

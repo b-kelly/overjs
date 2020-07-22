@@ -54,10 +54,6 @@ export class ControllerListController extends oJSX.JsxController {
 
         const container = this.target("demo");
 
-        if (!container) {
-            return;
-        }
-
         container.innerHTML = mapping[1];
 
         const markup = this.target("markup") as HTMLTextAreaElement;
