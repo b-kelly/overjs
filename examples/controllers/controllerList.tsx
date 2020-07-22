@@ -20,11 +20,15 @@ export class ControllerListController extends oJSX.JsxController {
         template: ["click", ControllerListController.logOnClick],
     };
 
-    render() {
+    // TODO how do I get the typings right on these?
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render(): any {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return (
             <div>
                 <ul>
                     {Array.from(types).map((i) => (
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
                         <li>
                             <a href="#" js-target="template">
                                 {i[1][0].name}

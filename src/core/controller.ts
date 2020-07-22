@@ -180,6 +180,7 @@ export abstract class Controller {
  * Describes the shape of all the helper functions on a controller
  */
 // TODO any?
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface HelperMap<T extends Controller = any> {
     //TODO instead of any, maybe do some tricks with generics?
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -189,6 +190,7 @@ export interface HelperMap<T extends Controller = any> {
 /**
  * Describes the shape of all bindings on a controller
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface BindingMap<T extends Controller = any> {
     [targetName: string]: [
         keyof HTMLElementEventMap,

@@ -10,6 +10,8 @@ export class Application {
     private controllerHandlers = new Map<string, ControllerManager>();
     private observer?: Observer;
     private registeredHelpers: {
+        // TODO fix when HelperMap types are fixed
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         [name: string]: (element: HTMLElement, ...data: any[]) => any;
     } = {};
     private started = false;
@@ -102,6 +104,8 @@ export class Application {
         Object.keys(helpers).forEach((key) => {
             // create a function that does the heavy lifting of getting the controller from the passed element
             // binding to the controller and then calling the helper on it, passing along all the necessary data
+            // TODO fix when HelperMap typings are fixed
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const boundHelper = (element: HTMLElement, ...data: any[]) => {
                 const controller = this.getControllerForElement(
                     element,
@@ -295,6 +299,8 @@ type ControllerInstance = {
 /**
  * Helper construct that manages all instances of a single controller type
  */
+//TODO add more explicit typings (remove `any`)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 class ControllerManager<T extends Controller = any> {
     private controllerType: ControllerConstructor<T>;
     private instances: ControllerInstance[] = [];

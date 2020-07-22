@@ -152,7 +152,7 @@ export class PopoverController extends Controller {
         const referenceElement = this.target("toggle");
 
         const cl = referenceElement.classList;
-        this.data.toggleClass!.split(/\s+/).forEach(function (cls: string) {
+        this.data.toggleClass.split(/\s+/).forEach(function (cls: string) {
             cl.toggle(cls, show);
         });
     }
