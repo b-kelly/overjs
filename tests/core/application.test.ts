@@ -1,16 +1,7 @@
-import { Application, Controller } from "../../src/core";
+import { Application } from "../../src/core";
+import { TestController } from "../test-helpers/TestController";
 
-class SampleController extends Controller {
-    connect() {
-        this.baseElement.innerHTML = "connected";
-    }
-
-    disconnect() {
-        this.baseElement.innerHTML = "disconnected";
-    }
-}
-
-function addElement(id: string, controller = "sample") {
+function addElement(id: string, controller = "test") {
     const el = document.createElement("div");
     el.innerHTML = "uninitialized";
     el.setAttribute("js", controller);
@@ -34,7 +25,7 @@ describe("Application", () => {
         expect(el1.innerHTML).toBe("uninitialized");
 
         const app = new Application();
-        app.register(SampleController);
+        app.register(TestController);
 
         await app.start();
 
@@ -61,12 +52,12 @@ describe("Application", () => {
         const el2 = addElement("el2");
         const el3 = addElement("el3", "fake");
         const app = new Application();
-        app.register(SampleController);
+        app.register(TestController);
         await app.start();
 
-        const controller1 = app.getControllerForElement(el1, "sample");
-        const controller2 = app.getControllerForElement(el2, "sample");
-        const controller3 = app.getControllerForElement(el3, "sample");
+        const controller1 = app.getControllerForElement(el1, "test");
+        const controller2 = app.getControllerForElement(el2, "test");
+        const controller3 = app.getControllerForElement(el3, "test");
 
         expect(controller1).toBeDefined();
         expect(controller2).toBeDefined();
