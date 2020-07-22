@@ -55,7 +55,7 @@ export class Controller {
      * Returns the first element for the given target
      * @param target The target to fetch
      */
-    protected target(target: string): HTMLElement {
+    protected target(target: string): HTMLElement | null {
         return this.baseElement.querySelector<HTMLElement>(
             `[js-target="${target}"]`
         );
@@ -152,7 +152,9 @@ export class Controller {
 
 /**
  * Describes the shape of a controller helper function
+ * TODO instead of `data?: any`, maybe use a spread? `...data: any[]` and remove eslint-disable
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Helper = (instance: Controller, data?: any) => any;
 
 /**
@@ -160,7 +162,7 @@ export type Helper = (instance: Controller, data?: any) => any;
  */
 export type Binding = [
     keyof HTMLElementEventMap,
-    (this: Controller, evt: Event) => void
+    (this: Controller, evt: Event) => boolean | undefined
 ];
 
 /**

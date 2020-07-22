@@ -57,8 +57,8 @@ export class Observer {
             } else if (mutation.type === "attributes") {
                 this.handleAttributeChange(
                     mutation.target,
-                    mutation.attributeName,
-                    mutation.oldValue
+                    mutation.attributeName ?? "",
+                    mutation.oldValue ?? ""
                 );
             }
         });
@@ -70,7 +70,7 @@ export class Observer {
      */
     private handleAddedElements(nodes: NodeList | Node[]) {
         //TODO filter on applicable elements only?
-        nodes.forEach((n: HTMLElement) => {
+        nodes.forEach((n: Node) => {
             this.delegates.additionDelegate(n);
         });
     }
@@ -81,7 +81,7 @@ export class Observer {
      */
     private handleRemovedElements(nodes: NodeList | Node[]) {
         //TODO filter on applicable elements only?
-        nodes.forEach((n: HTMLElement) => {
+        nodes.forEach((n: Node) => {
             this.delegates.removalDelegate(n);
         });
     }
@@ -106,7 +106,7 @@ export class Observer {
 /**
  * Describes the shape of a MutationDelegate callback
  */
-export type MutationDelegate = (element: HTMLElement) => void;
+export type MutationDelegate = (element: Node) => void;
 
 /**
  * Describes the shape of a AttributeMutationDelegate callback

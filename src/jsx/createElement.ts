@@ -34,14 +34,14 @@ export function createElement(
 }
 
 const appendChildNode = function (root: Node, child: any) {
-    let el: Node;
+    let el: Node | null = null;
 
     if (typeof child === "string") {
         el = document.createTextNode(child);
     } else if (child instanceof Node) {
         el = child;
     } else if (child instanceof Array) {
-        child.forEach((c) => appendChildNode(root, c));
+        child.forEach((c: string | Node) => appendChildNode(root, c));
     }
 
     if (!(el instanceof Node)) {

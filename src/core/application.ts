@@ -3,7 +3,7 @@ import { Observer } from "./observer";
 
 export class Application {
     private controllerHandlers = new Map<string, ControllerManager>();
-    private observer: Observer;
+    private observer?: Observer;
     private registeredHelpers: {
         [name: string]: (element: HTMLElement, data?: any) => any;
     } = {};
@@ -57,7 +57,7 @@ export class Application {
      * Destroys the application by instructing it to cease dom observation and destroy all existing controller instances
      */
     destroy(): void {
-        this.observer.disconnect();
+        this.observer?.disconnect();
         this.controllerHandlers.forEach((h) => h.destroy());
         this.controllerHandlers.clear();
     }
@@ -67,7 +67,7 @@ export class Application {
      * @param element The element to fetch the controller for
      * @param controller The simplified name of the controller
      */
-    getControllerForElement(element: HTMLElement, controller: string): Controller {
+    getControllerForElement(element: HTMLElement, controller: string): Controller | null {
         const handler = this.controllerHandlers.get(controller);
 
         // the given controller is not registered with this application
@@ -109,6 +109,8 @@ export class Application {
                     );
                 }
 
+                // TODO fix this! Looking at it, this is likely a bug?
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
                 return helpers[key](controller, data).bind(controller);
             };
 
@@ -136,7 +138,7 @@ export class Application {
      * Gets all elements within the given element that are applicable for being hooked up
      * @param element The element to search in for applicable elements
      */
-    private static getApplicableElements(element: HTMLElement) {
+    private static getApplicableElements(element: Element) {
         return element.querySelectorAll<HTMLElement>(
             `[js], :not([js]) [js-target]`
         );
@@ -146,9 +148,11 @@ export class Application {
      * Enhances an element and all applicable descendant elements
      * @param el The element (and its decendants) to enhance
      */
-    private enhanceElement(el: HTMLElement) {
-        // we don't operate on text nodes, nothing to enhance!
-        if (el.nodeType === Node.TEXT_NODE) {
+    private enhanceElement(node: Node) {
+        const el = node as HTMLElement;
+
+        // we only operate on non-text html elements
+        if (!el || el.nodeType === Node.TEXT_NODE) {
             return;
         }
 
@@ -177,9 +181,11 @@ export class Application {
      * Degrades an html element and all applicable descendant elements
      * @param el The element to degrade
      */
-    private degradeElement(el: HTMLElement) {
-        // we don't operate on text nodes, nothing to enhance!
-        if (el.nodeType === Node.TEXT_NODE) {
+    private degradeElement(node: Node) {
+        const el = node as HTMLElement;
+
+        // we only operate on non-text html elements
+        if (!el || el.nodeType === Node.TEXT_NODE) {
             return;
         }
 
@@ -231,7 +237,7 @@ export class Application {
      */
     private getHandlerForElement(
         el: HTMLElement
-    ): [ControllerManager, HTMLElement] {
+    ): [ControllerManager, HTMLElement] | null {
         // attempt to find the closest controller element
         // NOTE: this includes the given element itself as well
         const parentController = el.closest<HTMLElement>("[js]");
@@ -240,7 +246,8 @@ export class Application {
             return null;
         }
 
-        const controllerName = parentController.getAttribute("js");
+        // this will *never* return null, but add a coalesce to satisfy the strict null compiler check
+        const controllerName = parentController.getAttribute("js") ?? "";
 
         // if this controller is not registered, then there's nothing to do
         if (!this.controllerHandlers.has(controllerName)) {
@@ -249,6 +256,10 @@ export class Application {
 
         const controller = this.controllerHandlers.get(controllerName);
 
+        if (!controller) {
+            return null;
+        }
+
         return [controller, parentController];
     }
 
@@ -256,7 +267,7 @@ export class Application {
      * Calls the callback when the dom is ready for interaction
      * @param callback the function to call when the dom is ready
      */
-    private domReady(callback: (e: Event) => void) {
+    private domReady(callback: (e: Event | null) => void) {
         if (document.readyState === "loading") {
             document.addEventListener("DOMContentLoaded", callback);
         } else {
@@ -388,7 +399,7 @@ class ControllerManager {
      * @param baseElement The element to fetch the controller instance from
      */
     findInstanceForElement(baseElement: HTMLElement) {
-        let instance: ControllerInstance;
+        let instance: ControllerInstance | null = null;
 
         // TODO can we do better than this?
         // scan through every created instance and check if the passed element is the same as the instance's baseElement
@@ -434,7 +445,8 @@ class ControllerManager {
 
         // bind each targets' event to the bound function
         targets.forEach((t: HTMLElement) => {
-            const target = t.getAttribute("js-target");
+            // this will *never* return null, but add a coalesce to satisfy the strict null compiler check
+            const target = t.getAttribute("js-target") ?? "";
             const binding = bindings.get(target);
 
             // if there is no event binding for this target, skip it
@@ -465,7 +477,8 @@ class ControllerManager {
 
         // unbind each targets' event
         targets.forEach((t) => {
-            const target = t.getAttribute("js-target");
+            // this will *never* return null, but add a coalesce to satisfy the strict null compiler check
+            const target = t.getAttribute("js-target") ?? "";
             const binding = bindings.get(target);
 
             // this target isn't bound, so nothing to unbind
@@ -506,6 +519,8 @@ class InternalBindingMap {
                     e.preventDefault();
                     e.stopPropagation();
                 }
+
+                return result;
             };
 
             // saves this pre-bound function for easy retrieval / unbinding

@@ -11,14 +11,15 @@ export class JsxApplication extends Application {
     }
 
     // TODO document
-    start(callback: () => void | null = null): void {
-        super.start(() => {
+    start(): Promise<void> {
+        return super.start().then(() => {
             const root = document.querySelector<HTMLElement>(this.selector);
-            this.render(root);
 
-            if (callback) {
-                callback();
+            if (!root) {
+                throw "Cannot initialize application without a root element: " + this.selector;
             }
+
+            this.render(root);
         });
     }
 
