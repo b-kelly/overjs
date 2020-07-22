@@ -1,4 +1,4 @@
-import { Controller, Binding, BindingMap } from "../../src/core";
+import { Controller, BindingMap } from "../../src/core";
 
 export const sample = `
 <div js="modal">
