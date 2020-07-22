@@ -5,7 +5,7 @@ export class Application {
     private controllerHandlers = new Map<string, ControllerManager>();
     private observer?: Observer;
     private registeredHelpers: {
-        [name: string]: (element: HTMLElement, data?: any) => any;
+        [name: string]: (element: HTMLElement, ...data: any[]) => any;
     } = {};
     private started = false;
 
@@ -86,16 +86,16 @@ export class Application {
      * @param simplifiedName The name of the controller whose helpers are being registered
      * @param helpers The map of all helpers on this controller
      */
-    private registerHelpers(simplifiedName: string, helpers: HelperMap) {
+    private registerHelpers<T extends Controller>(simplifiedName: string, helpers: HelperMap<T>) {
         // loop through each passed helper and register
         Object.keys(helpers).forEach((key) => {
             // create a function that does the heavy lifting of getting the controller from the passed element
             // binding to the controller and then calling the helper on it, passing along all the necessary data
-            const boundHelper = (element: HTMLElement, data: any) => {
+            const boundHelper = (element: HTMLElement, ...data: any[]) => {
                 const controller = this.getControllerForElement(
                     element,
                     simplifiedName
-                );
+                ) as T;
 
                 if (!controller) {
                     throw (
@@ -109,7 +109,7 @@ export class Application {
 
                 // TODO revisit when assessing helper function type definitions
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-                return helper(controller, data);
+                return helper(controller, ...data);
             };
 
             this.registeredHelpers[key] = boundHelper;

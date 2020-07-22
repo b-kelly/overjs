@@ -3,8 +3,8 @@ import { Controller, HelperMap } from "../../src/core/controller";
 export class TestController extends Controller {
     static helpers: HelperMap = {
         // sets a public value on the instance that we can verify
-        setKey(instance: Controller, data: string): void {
-            (instance as TestController).key = data;
+        setKey(instance: TestController, data: string): void {
+            instance.key = data;
         },
     }
 

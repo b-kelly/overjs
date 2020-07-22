@@ -7,7 +7,7 @@ export class Controller {
     /**
      * A map of all the helper functions this controller exposes, keyed on the exposed helper's name
      */
-    static helpers: HelperMap = {};
+    static helpers: HelperMap<never> = {};
 
     /**
      * The base element this controller is attached to
@@ -151,13 +151,6 @@ export class Controller {
 }
 
 /**
- * Describes the shape of a controller helper function
- * TODO instead of `data?: any`, maybe use a spread? `...data: any[]` and remove eslint-disable
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Helper = (instance: Controller, data?: any) => any;
-
-/**
  * Describes the shape of a controller binding value
  */
 export type Binding = [
@@ -168,8 +161,11 @@ export type Binding = [
 /**
  * Describes the shape of all the helper functions on a controller
  */
-export interface HelperMap {
-    [helperName: string]: Helper;
+// TODO correct use of never?
+export interface HelperMap<T extends Controller = never> {
+    //TODO instead of any, maybe do some tricks with generics?
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [helperName: string]: (instance: T, ...data: any[]) => any;
 }
 
 /**
