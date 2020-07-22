@@ -2,7 +2,6 @@ import {
     Controller,
     ControllerConstructor,
     BindingMap,
-    Binding,
     HelperMap,
 } from "./controller";
 import { Observer } from "./observer";
@@ -531,8 +530,6 @@ class InternalBindingMap {
                     e.preventDefault();
                     e.stopPropagation();
                 }
-
-                return result;
             };
 
             // saves this pre-bound function for easy retrieval / unbinding
@@ -544,7 +541,7 @@ class InternalBindingMap {
      * Gets a saved bound function by its target key
      * @param target The target key to retrieve
      */
-    get(target: string): Binding {
+    get(target: string) {
         return this.targets[target];
     }
 }
