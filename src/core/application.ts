@@ -1,4 +1,10 @@
-import { Controller, ControllerConstructor, BindingMap, Binding, HelperMap } from "./controller";
+import {
+    Controller,
+    ControllerConstructor,
+    BindingMap,
+    Binding,
+    HelperMap,
+} from "./controller";
 import { Observer } from "./observer";
 
 export class Application {
@@ -63,7 +69,10 @@ export class Application {
      * @param element The element to fetch the controller for
      * @param controller The simplified name of the controller
      */
-    getControllerForElement(element: HTMLElement, controller: string): Controller | null {
+    getControllerForElement(
+        element: HTMLElement,
+        controller: string
+    ): Controller | null {
         const handler = this.controllerHandlers.get(controller);
 
         // the given controller is not registered with this application
@@ -86,7 +95,10 @@ export class Application {
      * @param simplifiedName The name of the controller whose helpers are being registered
      * @param helpers The map of all helpers on this controller
      */
-    private registerHelpers<T extends Controller>(simplifiedName: string, helpers: HelperMap<T>) {
+    private registerHelpers<T extends Controller>(
+        simplifiedName: string,
+        helpers: HelperMap<T>
+    ) {
         // loop through each passed helper and register
         Object.keys(helpers).forEach((key) => {
             // create a function that does the heavy lifting of getting the controller from the passed element
