@@ -16,7 +16,10 @@ export class JsxApplication extends Application {
             const root = document.querySelector<HTMLElement>(this.selector);
 
             if (!root) {
-                throw "Cannot initialize application without a root element: " + this.selector;
+                throw (
+                    "Cannot initialize application without a root element: " +
+                    this.selector
+                );
             }
 
             this.render(root);

@@ -29,7 +29,7 @@ function waitForMutation() {
 
 describe("Application", () => {
     it("should create an observer on start and remove on destroy", async () => {
-        const el1 = addElement("el1")
+        const el1 = addElement("el1");
         expect(el1.innerHTML).toBe("uninitialized");
 
         const app = await createAndStartApp();
@@ -48,7 +48,7 @@ describe("Application", () => {
         expect(el2.innerHTML).toBe("disconnected");
 
         // expect new elements to not connect at all
-        const el3 = addElement("el3")
+        const el3 = addElement("el3");
         expect(el3.innerHTML).toBe("uninitialized");
     });
 
@@ -78,7 +78,10 @@ describe("Application", () => {
         // call the helper and check that it ran on the correct instance
         const randomKey = `${Math.random()}`;
         app.helpers.setKey(el1, randomKey);
-        const controller = app.getControllerForElement(el1, "test") as TestController;
+        const controller = app.getControllerForElement(
+            el1,
+            "test"
+        ) as TestController;
         expect(controller?.key).toBe(randomKey);
     });
 });

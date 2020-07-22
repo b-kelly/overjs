@@ -5,7 +5,7 @@ export class TestController extends Controller {
         // sets a public value on the instance that we can verify
         setKey(instance: TestController, data: string): void {
             instance.key = data;
-        }
+        },
     };
 
     // arbitrary public value to verify setKey ran

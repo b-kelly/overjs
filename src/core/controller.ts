@@ -1,7 +1,7 @@
 export interface ControllerConstructor<T extends Controller> {
     bindings: BindingMap;
     helpers: HelperMap<T>;
-    new(el: HTMLElement): T;
+    new (el: HTMLElement): T;
     domName(): string;
     domName(name: string): string;
 }
@@ -190,5 +190,8 @@ export interface HelperMap<T extends Controller = any> {
  * Describes the shape of all bindings on a controller
  */
 export interface BindingMap<T extends Controller = any> {
-    [targetName: string]: [keyof HTMLElementEventMap, (this: T, evt: Event) => boolean | void];
+    [targetName: string]: [
+        keyof HTMLElementEventMap,
+        (this: T, evt: Event) => boolean | void
+    ];
 }

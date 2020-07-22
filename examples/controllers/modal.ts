@@ -97,8 +97,7 @@ export class ModalController extends Controller {
         }
 
         // check for transitionend support
-        const supportsTransitionEnd =
-            (modal).ontransitionend !== undefined;
+        const supportsTransitionEnd = modal.ontransitionend !== undefined;
 
         // shown/hidden events trigger after toggling the class
         if (supportsTransitionEnd) {
