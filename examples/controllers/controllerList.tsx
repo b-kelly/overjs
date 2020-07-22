@@ -1,4 +1,4 @@
-import { Controller, Binding } from "../../src/core";
+import { Controller, BindingMap } from "../../src/core";
 import { TestSampleController, sample as TestSampleSample } from "./sample";
 import { ModalController, sample as ModalSample } from "./modal";
 import { PopoverController, sample as PopoverSample } from "./popover";
@@ -16,8 +16,8 @@ const types = new Map([
 ]);
 
 export class ControllerListController extends oJSX.JsxController {
-    static bindings = {
-        template: ["click", ControllerListController.logOnClick] as Binding, //TODO need to get rid of `as Binding`, get rid of prefix
+    static bindings: BindingMap = {
+        template: ["click", ControllerListController.logOnClick],
     };
 
     render() {

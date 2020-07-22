@@ -1,4 +1,4 @@
-import { Controller, Binding } from "../../src/core";
+import { Controller, BindingMap } from "../../src/core";
 import Popper from "popper.js";
 
 export const sample = `
@@ -16,8 +16,8 @@ export const sample = `
 `;
 
 export class PopoverController extends Controller {
-    static bindings = {
-        toggle: ["click", PopoverController.toggle] as Binding,
+    static bindings: BindingMap = {
+        toggle: ["click", PopoverController.toggle],
     };
 
     static helpers = {

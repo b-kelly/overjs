@@ -1,4 +1,4 @@
-import { Controller, Binding } from "../../src/core";
+import { Controller, Binding, BindingMap } from "../../src/core";
 
 export const sample = `
 <div js="modal">
@@ -20,9 +20,9 @@ export const sample = `
 `;
 
 export class ModalController extends Controller {
-    static bindings = {
-        show: ["click", ModalController.show] as Binding,
-        hide: ["click", ModalController.hide] as Binding,
+    static bindings: BindingMap = {
+        show: ["click", ModalController.show],
+        hide: ["click", ModalController.hide],
     };
 
     static helpers = {

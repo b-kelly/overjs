@@ -177,14 +177,6 @@ export abstract class Controller {
 }
 
 /**
- * Describes the shape of a controller binding value
- */
-export type Binding<T extends Controller = any> = [
-    keyof HTMLElementEventMap,
-    (this: T, evt: Event) => boolean | undefined
-];
-
-/**
  * Describes the shape of all the helper functions on a controller
  */
 // TODO any?
@@ -198,5 +190,5 @@ export interface HelperMap<T extends Controller = any> {
  * Describes the shape of all bindings on a controller
  */
 export interface BindingMap<T extends Controller = any> {
-    [targetName: string]: Binding<T>;
+    [targetName: string]: [keyof HTMLElementEventMap, (this: T, evt: Event) => boolean | void];
 }

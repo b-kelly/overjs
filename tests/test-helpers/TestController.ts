@@ -1,12 +1,12 @@
-import { Controller, HelperMap } from "../../src/core/controller";
+import { Controller } from "../../src/core/controller";
 
 export class TestController extends Controller {
-    static helpers: HelperMap = {
+    static helpers = {
         // sets a public value on the instance that we can verify
         setKey(instance: TestController, data: string): void {
             instance.key = data;
-        },
-    }
+        }
+    };
 
     // arbitrary public value to verify setKey ran
     key: string | null = null;
