@@ -105,9 +105,11 @@ export class Application {
                     );
                 }
 
-                // TODO fix this! Looking at it, this is likely a bug?
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-                return helpers[key](controller, data).bind(controller);
+                const helper = helpers[key].bind(controller);
+
+                // TODO revisit when assessing helper function type definitions
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+                return helper(controller, data);
             };
 
             this.registeredHelpers[key] = boundHelper;

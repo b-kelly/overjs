@@ -12,6 +12,14 @@ function addElement(id: string, controller = "test") {
     return el;
 }
 
+async function createAndStartApp(): Promise<Application> {
+    const app = new Application();
+    app.register(TestController);
+    await app.start();
+
+    return app;
+}
+
 /** Hack that forces the test to wait a bit for the MutationObserver to kick in */
 function waitForMutation() {
     return new Promise((resolve) => {
@@ -24,10 +32,7 @@ describe("Application", () => {
         const el1 = addElement("el1")
         expect(el1.innerHTML).toBe("uninitialized");
 
-        const app = new Application();
-        app.register(TestController);
-
-        await app.start();
+        const app = await createAndStartApp();
 
         // existing elements should be connected
         expect(el1.innerHTML).toBe("connected");
@@ -51,9 +56,7 @@ describe("Application", () => {
         const el1 = addElement("el1");
         const el2 = addElement("el2");
         const el3 = addElement("el3", "fake");
-        const app = new Application();
-        app.register(TestController);
-        await app.start();
+        const app = await createAndStartApp();
 
         const controller1 = app.getControllerForElement(el1, "test");
         const controller2 = app.getControllerForElement(el2, "test");
@@ -63,5 +66,19 @@ describe("Application", () => {
         expect(controller2).toBeDefined();
         expect(controller1).not.toBe(controller2);
         expect(controller3).toBeNull();
+    });
+
+    it("should have registered helpers", async () => {
+        const el1 = addElement("el1");
+        const app = await createAndStartApp();
+
+        // the helpers from TestController should be added to app.helpers
+        expect(app.helpers).toHaveProperty(TestController.helpers.setKey.name);
+
+        // call the helper and check that it ran on the correct instance
+        const randomKey = `${Math.random()}`;
+        app.helpers.setKey(el1, randomKey);
+        const controller = app.getControllerForElement(el1, "test") as TestController;
+        expect(controller?.key).toBe(randomKey);
     });
 });
