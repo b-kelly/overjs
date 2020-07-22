@@ -3,7 +3,7 @@ module.exports = {
     parser: "@typescript-eslint/parser",
     parserOptions: {
         tsconfigRootDir: __dirname,
-        project: ["./tsconfig.eslint.json"],
+        project: ["./tsconfig.json"],
         ecmaFeatures: {
             jsx: true,
         },
@@ -14,6 +14,7 @@ module.exports = {
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
         "plugin:jest/recommended",
+        "prettier",
         "prettier/@typescript-eslint",
     ],
     rules: {
