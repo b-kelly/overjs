@@ -1,35 +1,28 @@
 type ComponentType<T extends Props> =
     | ComponentConstructor<T>
-    | (() => jsx.ComponentChildren);
+    | ((props: ComponentProps<Props>) => jsx.ComponentChildren);
 
 // TODO document
 export interface ComponentConstructor<T extends Props> {
-    new (props: T): Component<T>;
-    defaultProps: Partial<T>;
+    new (): Component<T>;
+    // TODO! Can't tell the difference between a class and a function without something like this...
+    isComponent: boolean;
 }
 
-type Props = { [key: string]: any };
-type ComponentProps<T extends Props> = T & {
+type Props = { [key: string]: unknown };
+export type ComponentProps<T extends Props = Props> = T & {
     readonly children?: jsx.ComponentChildren;
 };
 
 // TODO document
 export abstract class Component<T extends Props = Props> {
-    props: ComponentProps<T>;
-    static defaultProps: Partial<Props> = {};
-
-    constructor(props: T) {
-        this.props = props;
-    }
-
+    static isComponent = true;
     abstract render(props?: ComponentProps<T>): jsx.ComponentChildren;
 }
 
 // TODO document
-export class Fragment extends Component {
-    render(props?: ComponentProps<Props>): jsx.ComponentChildren {
-        return props?.children;
-    }
+export function Fragment(props: ComponentProps<Props>): jsx.ComponentChildren {
+    return props.children;
 }
 
 export interface JsxNode<T extends Props> {
@@ -53,67 +46,77 @@ export function createElement<T extends Props>(
     };
 }
 
-export function render<T extends Props>(node: JsxNode<T>): Element[] {
+export function render<T extends Props>(node: JsxNode<T>): Node[] {
     let rootElement: Element;
 
     if (typeof node.type === "string") {
         rootElement = document.createElement(node.type);
 
         appendChildren(rootElement, node.props.children);
-    } else if ("defaultProps" in node.type) {
-        // TODO add children in place without wrapping div?
+    } else if ("isComponent" in node.type) {
         const prerenderedNode = createElement(
             "div",
-            {
-                ...node.props,
-                ...node.type.defaultProps,
-            },
-            new node.type(node.props).render(node.props)
+            node.props,
+            new node.type().render(node.props)
         );
-        rootElement = render(prerenderedNode)[0];
+        rootElement = render(prerenderedNode)[0] as Element;
     } else {
-        // TODO add children in place without wrapping div?
-        const prerenderedNode = createElement("div", node.props, node.type());
-        // TODO
-        rootElement = render(prerenderedNode)[0];
+        const prerenderedNode = createElement(
+            "div",
+            node.props,
+            node.type(node.props)
+        );
+        rootElement = render(prerenderedNode)[0] as Element;
     }
 
-    if (node.props) {
+    if (rootElement) {
         Object.keys(node.props).forEach((key) => {
-            const val: any = node.props[key];
+            const val: unknown = node.props[key];
+
+            if (key === "children") {
+                return;
+            }
+
+            if (key === "className") {
+                key = "class";
+            }
+
             // boolean props just set the attribute w/ no value
             if (val === true) {
                 rootElement.setAttribute(key, "");
-            } else if (val) {
+            } else if (typeof val === "string") {
+                // TODO are we leaving out anything important?
                 rootElement.setAttribute(key, val);
             }
         });
     }
 
-    return [rootElement];
+    return node.type !== Fragment
+        ? [rootElement]
+        : Array.from(rootElement.childNodes);
 }
 
-const appendChildren = function (root: Node, child: jsx.ComponentChildren) {
-    let el: Node | null = null;
+const appendChildren = function (root: Element, child: jsx.ComponentChildren) {
+    let el: Node[] = [];
 
     if (!child) {
         return;
     }
 
     if (typeof child !== "object") {
-        el = document.createTextNode(child.toString());
+        el.push(document.createTextNode(child.toString()));
     } else if (child instanceof Array) {
         child.forEach((c) => appendChildren(root, c));
     } else if ("props" in child) {
         // TODO
-        el = render(child)[0];
+        el = render(child);
     } else {
         throw "TODO Don't know what to do here... check this in tests later.";
     }
 
-    if (!(el instanceof Node)) {
+    if (!el.length) {
         return;
     }
 
-    root.appendChild(el);
+    root.append(...el);
 };
