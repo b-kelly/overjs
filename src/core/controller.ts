@@ -156,7 +156,7 @@ export abstract class Controller {
 
     /**
      * Translates this controller's name to the name you'd use to reference it in the dom
-     * eg "TestSampleController" becomes "test-controller"
+     * e.g. "TestSampleController" and "TestSample" both become "test-sample"
      */
     public static domName(): string {
         return this.getDomName(this.name);
@@ -164,7 +164,7 @@ export abstract class Controller {
 
     /**
      * Translates a controller name string to the name you'd use to reference it in the dom
-     * eg "TestSampleController" becomes "test-controller"
+     * e.g. "TestSampleController" and "TestSample" both become "test-sample"
      * @param name
      */
     public static getDomName(name: string): string {
