@@ -1,4 +1,4 @@
-import { Component } from "./createElement";
+import { Component, JsxNode } from "./createElement";
 
 export = jsx;
 export as namespace jsx;
@@ -24,9 +24,7 @@ declare namespace jsx {
     type ComponentChildren = ComponentChild[] | ComponentChild;
 
     export namespace JSX {
-        interface Element {
-            props?: unknown;
-        }
+        type Element = JsxNode<never>;
         type ElementClass = Component;
         interface ElementAttributesProperty {
             props: { [key: string]: unknown };

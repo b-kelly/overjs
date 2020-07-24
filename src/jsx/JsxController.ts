@@ -1,5 +1,5 @@
 import { Controller } from "../core";
-import { createElement, Component } from "./createElement";
+import { createElement, Component, render } from "./createElement";
 
 export abstract class JsxController extends Controller implements Component {
     props: { [key: string]: unknown } = {};
@@ -20,9 +20,9 @@ export abstract class JsxController extends Controller implements Component {
     // TODO document
     connect(): void {
         // render the children
-        const content = createElement("div", {}, this.content());
+        const content = render(createElement("div", {}, this.content()));
 
-        this.baseElement.append(...content.children);
+        this.baseElement.append(...content);
     }
 
     // TODO
