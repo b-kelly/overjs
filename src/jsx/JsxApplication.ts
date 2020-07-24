@@ -1,5 +1,6 @@
 import { Application, Controller } from "../core";
-import { JsxController } from "./JsxController";
+import { Component } from "./JsxController";
+import { createElement } from "./createElement";
 
 export class JsxApplication extends Application {
     private selector: string;
@@ -34,13 +35,13 @@ export class JsxApplication extends Application {
         const controller = this.getControllerForElement(
             root,
             controllerName
-        ) as JsxController;
+        ) as Component;
 
         if (!controller) {
             return;
         }
 
-        const content = controller.render();
+        const content = createElement(typeof controller, {});
         root.appendChild(content);
     }
 }

@@ -1,17 +1,22 @@
 import { Controller } from "../core";
+import { createElement } from "./createElement";
 
-export abstract class JsxController extends Controller {
+export abstract class Component extends Controller {
     constructor(el: HTMLElement) {
         super(el);
     }
 
+    props: any = {};
+
     // TODO document
     connect(): void {
-        const content = this.render();
-        this.baseElement.appendChild(content);
+        // render the children
+        const content = createElement("div", {}, this.render());
+
+        this.baseElement.append(...content.children);
     }
 
     // TODO needs to return jsx.JSX.Element
     // TODO document
-    abstract render(): Element;
+    abstract render(): jsx.ComponentChildren;
 }

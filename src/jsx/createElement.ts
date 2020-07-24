@@ -1,19 +1,29 @@
 // TODO!
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment */
-import { JsxController } from "./JsxController";
+import { Component } from "./JsxController";
+import { ControllerConstructor } from "../core/controller";
 
 //TODO docs
-export function createElement(
-    type: string | JsxController,
+export function createElement<T extends Component>(
+    type: string | ControllerConstructor<T> | (() => jsx.ComponentChildren),
     props: { [key: string]: any } | null,
-    ...children: any[]
+    ...children: jsx.ComponentChildren[]
 ): Element {
     let rootElement: Element;
 
     if (typeof type === "string") {
         rootElement = document.createElement(type);
+    } else if ("domName" in type) {
+        // TODO add children in place without wrapping div?
+        rootElement = createElement("div", {
+            ...props,
+            ...{
+                js: type.domName(),
+            },
+        });
     } else {
-        rootElement = type.render();
+        // TODO add children in place without wrapping div?
+        rootElement = createElement("div", props, type());
     }
 
     if (props) {

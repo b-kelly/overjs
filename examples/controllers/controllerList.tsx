@@ -1,5 +1,5 @@
 import { Controller, BindingMap } from "../../src/core";
-import { TestSampleController, sample as TestSampleSample } from "./sample";
+import { TestSampleController } from "./sample";
 import { ModalController, sample as ModalSample } from "./modal";
 import { PopoverController, sample as PopoverSample } from "./popover";
 import jsx from "../../src/jsx";
@@ -7,22 +7,17 @@ import jsx from "../../src/jsx";
 type Mapping = [typeof Controller, string];
 
 const types = new Map([
-    [
-        TestSampleController.name,
-        [TestSampleController, TestSampleSample] as Mapping,
-    ],
     [ModalController.name, [ModalController, ModalSample] as Mapping],
     [PopoverController.name, [PopoverController, PopoverSample] as Mapping],
 ]);
 
-export class ControllerListController extends jsx.JsxController {
+export class ControllerListController extends jsx.Component {
     static bindings: BindingMap = {
         template: ["click", ControllerListController.logOnClick],
     };
 
     // TODO needs to return the right type
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    render(): any {
+    render(): jsx.ComponentChildren {
         return (
             <div>
                 <ul>
@@ -33,6 +28,9 @@ export class ControllerListController extends jsx.JsxController {
                             </a>
                         </li>
                     ))}
+                    <li>
+                        <TestSampleController p1="test"></TestSampleController>
+                    </li>
                 </ul>
                 <div js-target="demo"></div>
                 <textarea js-target="markup"></textarea>

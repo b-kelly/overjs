@@ -1,3 +1,5 @@
+import { Component } from "./JsxController";
+
 export = jsx;
 export as namespace jsx;
 
@@ -11,7 +13,7 @@ declare namespace jsx {
     };
 
     type ComponentChild =
-        | JSX.Element
+        | unknown
         | string
         | number
         | boolean
@@ -19,13 +21,16 @@ declare namespace jsx {
         | undefined;
     type ComponentChildren = ComponentChild[] | ComponentChild;
 
+    interface ControllerAttributes {
+        js?: string;
+        "js-target"?: string;
+    }
+
     export namespace JSX {
         interface Element {
             props?: unknown;
         }
-        interface ElementClass {
-            render(): JSX.Element;
-        }
+        type ElementClass = Component;
         interface ElementAttributesProperty {
             props: unknown;
         }
@@ -33,12 +38,10 @@ declare namespace jsx {
             children: ComponentChildren;
         }
 
-        interface IntrinsicAttributes {
-            js: string;
-            "js-target": string;
-        }
+        type IntrinsicAttributes = ControllerAttributes;
         // eslint-disable-next-line @typescript-eslint/no-empty-interface
-        interface IntrinsicClassAttributes {}
+        interface IntrinsicClassAttributes<T = never>
+            extends ControllerAttributes {}
 
         // maps every built in tag name to the extended version of that tag's class
         // e.g. "div" gets mapped to `IntrinsicElement<HTMLDivElement>`
