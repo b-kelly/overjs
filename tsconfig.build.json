@@ -8,7 +8,7 @@
         "sourceMap": true,
         "target": "es6",
         "jsx": "react",
-        "jsxFactory": "oJSX.createElement",
+        "jsxFactory": "jsx.createElement",
         "esModuleInterop": true
     },
     "include": [

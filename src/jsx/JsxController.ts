@@ -11,6 +11,7 @@ export abstract class JsxController extends Controller {
         this.baseElement.appendChild(content);
     }
 
+    // TODO needs to return jsx.JSX.Element
     // TODO document
     abstract render(): Element;
 }

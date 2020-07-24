@@ -2,7 +2,7 @@ import { Controller, BindingMap } from "../../src/core";
 import { TestSampleController, sample as TestSampleSample } from "./sample";
 import { ModalController, sample as ModalSample } from "./modal";
 import { PopoverController, sample as PopoverSample } from "./popover";
-import * as oJSX from "../../src/jsx";
+import jsx from "../../src/jsx";
 
 type Mapping = [typeof Controller, string];
 
@@ -15,20 +15,18 @@ const types = new Map([
     [PopoverController.name, [PopoverController, PopoverSample] as Mapping],
 ]);
 
-export class ControllerListController extends oJSX.JsxController {
+export class ControllerListController extends jsx.JsxController {
     static bindings: BindingMap = {
         template: ["click", ControllerListController.logOnClick],
     };
 
-    // TODO how do I get the typings right on these?
+    // TODO needs to return the right type
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     render(): any {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return (
             <div>
                 <ul>
                     {Array.from(types).map((i) => (
-                        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
                         <li>
                             <a href="#" js-target="template">
                                 {i[1][0].name}
