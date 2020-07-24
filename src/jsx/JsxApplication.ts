@@ -1,5 +1,5 @@
 import { Application, Controller } from "../core";
-import { Component } from "./JsxController";
+import { JsxController } from "./JsxController";
 import { createElement } from "./createElement";
 
 export class JsxApplication extends Application {
@@ -35,7 +35,7 @@ export class JsxApplication extends Application {
         const controller = this.getControllerForElement(
             root,
             controllerName
-        ) as Component;
+        ) as JsxController;
 
         if (!controller) {
             return;

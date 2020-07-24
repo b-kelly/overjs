@@ -1,17 +1,30 @@
 // TODO!
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment */
-import { Component } from "./JsxController";
-import { ControllerConstructor } from "../core/controller";
-
 type ComponentType =
-    | ControllerConstructor<never>
+    | ComponentConstructor<never>
     | (() => jsx.ComponentChildren);
 
-export function Fragment(test: any) {
-    console.log(test);
+// TODO document
+export interface ComponentConstructor<T extends Component> {
+    new (): T;
+    defaultProps: { [key: string]: unknown };
 }
 
-//TODO docs
+// TODO document
+export abstract class Component {
+    props: { [key: string]: unknown } = {};
+    static defaultProps: { [key: string]: unknown } = {};
+    abstract render(): jsx.ComponentChildren;
+}
+
+// TODO document
+export class Fragment extends Component {
+    render(): jsx.ComponentChildren {
+        return null;
+    }
+}
+
+// TODO document
 export function createElement(
     type: string | ComponentType,
     props: { [key: string]: any } | null,
@@ -21,13 +34,11 @@ export function createElement(
 
     if (typeof type === "string") {
         rootElement = document.createElement(type);
-    } else if ("domName" in type) {
+    } else if ("defaultProps" in type) {
         // TODO add children in place without wrapping div?
         rootElement = createElement("div", {
             ...props,
-            ...{
-                js: type.domName(),
-            },
+            ...type.defaultProps,
         });
     } else {
         // TODO add children in place without wrapping div?
@@ -46,7 +57,7 @@ export function createElement(
         });
     }
 
-    children.forEach((c: any) => {
+    children.forEach((c: jsx.ComponentChildren) => {
         appendChildNode(rootElement, c);
     });
 

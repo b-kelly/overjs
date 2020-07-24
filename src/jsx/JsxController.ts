@@ -1,12 +1,18 @@
 import { Controller } from "../core";
-import { createElement } from "./createElement";
+import { createElement, Component } from "./createElement";
 
-export abstract class Component extends Controller {
+export abstract class JsxController extends Controller implements Component {
+    props: { [key: string]: unknown } = {};
+
+    static get defaultProps(): { [key: string]: string } {
+        return {
+            js: this.domName(),
+        };
+    }
+
     constructor(el: HTMLElement) {
         super(el);
     }
-
-    props: any = {};
 
     // TODO document
     connect(): void {
@@ -16,7 +22,17 @@ export abstract class Component extends Controller {
         this.baseElement.append(...content.children);
     }
 
-    // TODO needs to return jsx.JSX.Element
     // TODO document
     abstract render(): jsx.ComponentChildren;
+
+    /**
+     * Translates a controller/component name string to the name you'd use to reference it in the dom
+     * e.g. "TestSampleController", "TestSampleComponent", "TestSample" all become "test-sample"
+     * @param name
+     */
+    public static getDomName(name: string): string {
+        return Controller.getDomName(name)
+            .replace(/-?component$/, "")
+            .trim();
+    }
 }

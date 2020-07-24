@@ -3,6 +3,7 @@ import { TestSampleController } from "./sample";
 import { ModalController, sample as ModalSample } from "./modal";
 import { PopoverController, sample as PopoverSample } from "./popover";
 import jsx from "../../src/jsx";
+import { JsxController } from "../../src/jsx/JsxController";
 
 type Mapping = [typeof Controller, string];
 
@@ -11,7 +12,7 @@ const types = new Map([
     [PopoverController.name, [PopoverController, PopoverSample] as Mapping],
 ]);
 
-export class ControllerListController extends jsx.Component {
+export class ControllerListController extends JsxController {
     static bindings: BindingMap = {
         template: ["click", ControllerListController.logOnClick],
     };
@@ -29,7 +30,7 @@ export class ControllerListController extends jsx.Component {
                         </li>
                     ))}
                     <li>
-                        <TestSampleController p1="test"></TestSampleController>
+                        <TestSampleController />
                     </li>
                 </ul>
                 <div js-target="demo"></div>

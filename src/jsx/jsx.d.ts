@@ -1,4 +1,4 @@
-import { Component } from "./JsxController";
+import { Component } from "./createElement";
 
 export = jsx;
 export as namespace jsx;
@@ -34,7 +34,7 @@ declare namespace jsx {
         }
         type ElementClass = Component;
         interface ElementAttributesProperty {
-            props: unknown;
+            props: { [key: string]: unknown };
         }
         interface ElementChildrenAttribute {
             children: ComponentChildren;
