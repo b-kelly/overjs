@@ -3,9 +3,17 @@
 import { Component } from "./JsxController";
 import { ControllerConstructor } from "../core/controller";
 
+type ComponentType =
+    | ControllerConstructor<never>
+    | (() => jsx.ComponentChildren);
+
+export function Fragment(test: any) {
+    console.log(test);
+}
+
 //TODO docs
-export function createElement<T extends Component>(
-    type: string | ControllerConstructor<T> | (() => jsx.ComponentChildren),
+export function createElement(
+    type: string | ComponentType,
     props: { [key: string]: any } | null,
     ...children: jsx.ComponentChildren[]
 ): Element {

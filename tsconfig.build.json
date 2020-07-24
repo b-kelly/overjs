@@ -9,6 +9,7 @@
         "target": "es6",
         "jsx": "react",
         "jsxFactory": "jsx.createElement",
+        "jsxFragmentFactory": "jsx.Fragment",
         "esModuleInterop": true
     },
     "include": [

@@ -1,7 +1,7 @@
 import jsx from "../../src/jsx";
 
 function FunctionComponent() {
-    return <div>Hello world!</div>;
+    return <>Hello world!</>;
 }
 
 export class TestSampleController extends jsx.Component {

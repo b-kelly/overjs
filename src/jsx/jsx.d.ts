@@ -13,7 +13,9 @@ declare namespace jsx {
     };
 
     type ComponentChild =
-        | unknown
+        | JSX.Element
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        | object
         | string
         | number
         | boolean
