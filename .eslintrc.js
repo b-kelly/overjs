@@ -21,5 +21,8 @@ module.exports = {
         "no-console": "error",
         "no-alert": "error",
         "@typescript-eslint/unbound-method": "off",
+        // turn off the regular rule in favor of the "experimental" rule (for jsx support)
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars-experimental": ["warn"],
     },
 };
