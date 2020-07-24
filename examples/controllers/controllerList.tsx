@@ -1,53 +1,48 @@
-import { Controller, BindingMap } from "../../src/core";
-import { TestSampleController } from "./sample";
+import { BindingMap } from "../../src/core";
+import jsx from "../../src/jsx";
+import { ComponentConstructor } from "../../src/jsx/createElement";
 import { ModalController, sample as ModalSample } from "./modal";
 import { PopoverController, sample as PopoverSample } from "./popover";
-import jsx from "../../src/jsx";
-import { JsxController } from "../../src/jsx/JsxController";
+import { TestSampleController } from "./sample";
 
-type Mapping = [typeof Controller, string];
-
-const types = new Map([
-    [ModalController.name, [ModalController, ModalSample] as Mapping],
-    [PopoverController.name, [PopoverController, PopoverSample] as Mapping],
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const types = new Map<string, string | ComponentConstructor<any>>([
+    [ModalController.name, ModalSample],
+    [PopoverController.name, PopoverSample],
+    [TestSampleController.name, TestSampleController],
 ]);
 
-export class ControllerListController extends JsxController {
+export class ControllerListController extends jsx.JsxController {
     static bindings: BindingMap = {
         template: ["click", ControllerListController.logOnClick],
     };
 
-    // TODO needs to return the right type
-    render(): jsx.ComponentChildren {
+    content(): jsx.ComponentChildren {
         return (
-            <div>
+            <>
                 <ul>
                     {Array.from(types).map((i) => (
                         <li>
                             <a href="#" js-target="template">
-                                {i[1][0].name}
+                                {i[0]}
                             </a>
                         </li>
                     ))}
-                    <li>
-                        <TestSampleController />
-                    </li>
                 </ul>
                 <div js-target="demo"></div>
                 <textarea js-target="markup"></textarea>
-            </div>
+            </>
         );
     }
 
     private static logOnClick(this: ControllerListController, e: Event) {
-        //TODO get rid of 'this:'?
-        const controller = (e.target as HTMLElement).textContent;
+        const controllerName = (e.target as HTMLElement).textContent;
 
-        if (!controller) {
+        if (!controllerName) {
             return;
         }
 
-        const mapping = types.get(controller);
+        const mapping = types.get(controllerName);
 
         if (!mapping) {
             return;
@@ -55,9 +50,16 @@ export class ControllerListController extends JsxController {
 
         const container = this.target("demo");
 
-        container.innerHTML = mapping[1];
+        container.innerHTML = "";
+
+        if (typeof mapping === "string") {
+            container.innerHTML = mapping;
+        } else {
+            const renderedElement = jsx.createElement(mapping, {});
+            container.append(renderedElement);
+        }
 
         const markup = this.target("markup") as HTMLTextAreaElement;
-        markup.value = mapping[1];
+        markup.value = container.innerHTML;
     }
 }

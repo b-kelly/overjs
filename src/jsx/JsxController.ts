@@ -10,20 +10,28 @@ export abstract class JsxController extends Controller implements Component {
         };
     }
 
-    constructor(el: HTMLElement) {
-        super(el);
+    constructor(); // no-param constructor for jsx rendering
+    constructor(el: HTMLElement);
+    constructor(el?: HTMLElement) {
+        // TODO
+        super(el ?? document.createElement("div"));
     }
 
     // TODO document
     connect(): void {
         // render the children
-        const content = createElement("div", {}, this.render());
+        const content = createElement("div", {}, this.content());
 
         this.baseElement.append(...content.children);
     }
 
+    // TODO
+    render(): jsx.ComponentChildren {
+        return null;
+    }
+
     // TODO document
-    abstract render(): jsx.ComponentChildren;
+    protected abstract content(): jsx.ComponentChildren;
 
     /**
      * Translates a controller/component name string to the name you'd use to reference it in the dom

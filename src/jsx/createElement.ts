@@ -1,7 +1,7 @@
 // TODO!
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment */
-type ComponentType =
-    | ComponentConstructor<never>
+type ComponentType<T extends Component> =
+    | ComponentConstructor<T>
     | (() => jsx.ComponentChildren);
 
 // TODO document
@@ -25,8 +25,8 @@ export class Fragment extends Component {
 }
 
 // TODO document
-export function createElement(
-    type: string | ComponentType,
+export function createElement<T extends Component>(
+    type: string | ComponentType<T>,
     props: { [key: string]: any } | null,
     ...children: jsx.ComponentChildren[]
 ): Element {
@@ -36,10 +36,14 @@ export function createElement(
         rootElement = document.createElement(type);
     } else if ("defaultProps" in type) {
         // TODO add children in place without wrapping div?
-        rootElement = createElement("div", {
-            ...props,
-            ...type.defaultProps,
-        });
+        rootElement = createElement(
+            "div",
+            {
+                ...props,
+                ...type.defaultProps,
+            },
+            new type().render()
+        );
     } else {
         // TODO add children in place without wrapping div?
         rootElement = createElement("div", props, type());
