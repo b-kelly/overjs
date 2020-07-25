@@ -1,34 +1,50 @@
+/** Represents the different types of valid components that can be passed to a jsxFactor */
 type ComponentType =
+    | string
     | ComponentConstructor
     | ((props: jsx.ComponentProps) => jsx.ComponentChildren);
 
-// TODO document
+/** Represents a constructable component */
 export interface ComponentConstructor {
     new (): Component;
-    // TODO Can't tell the difference between a class constructor and a plain function
-    // without a property to key off of...
+    // TODO We can't tell the difference between a class constructor
+    // and a plain function without a property to key off of...
     isComponent: boolean;
 }
 
-// TODO document
+/** Base class for creating a renderable JSX Class Component */
 export abstract class Component {
     static isComponent = true;
+    /**
+     * Creates the renderable content for this component
+     * @param props The props added to the component at render
+     */
     abstract render(props?: jsx.ComponentProps): jsx.ComponentChildren;
 }
 
-// TODO document
+/**
+ * Represents a JSX fragment which is a "transparent" element that is used like <>children</>;
+ * This method is a valid target for tsconfig's compilerOptions.jsxFragmentFactory
+ */
 export function Fragment(props: jsx.ComponentProps): jsx.ComponentChildren {
     return props.children;
 }
 
+/** Represents a "rendered" JSX element */
 export interface JsxNode {
-    type: string | ComponentType;
+    type: ComponentType;
     props: jsx.Props & { children: jsx.ComponentChildren };
 }
 
-// TODO document
+/**
+ * Creates a JsxNode from a valid JSX input;
+ * This method is a valid target for tsconfig's compilerOptions.jsxFactory
+ * @param type The type of the element to create
+ * @param props The properties to add to the element
+ * @param children The children of the element
+ */
 export function createElement(
-    type: string | ComponentType,
+    type: ComponentType,
     props: jsx.Props | null,
     ...children: jsx.ComponentChildren[]
 ): JsxNode {
@@ -40,9 +56,12 @@ export function createElement(
     };
 }
 
-// TODO document
+/**
+ * Renders a JsxNode into an array of DOM nodes
+ * @param node The node to render
+ */
 export function render(node: JsxNode): Node[] {
-    let rootElement: Element;
+    let rootElement: Node;
 
     if (typeof node.type === "string") {
         rootElement = document.createElement(node.type);
@@ -54,17 +73,18 @@ export function render(node: JsxNode): Node[] {
             node.props,
             new node.type().render(node.props)
         );
-        rootElement = render(prerenderedNode)[0] as Element;
+        rootElement = render(prerenderedNode)[0];
     } else {
         const prerenderedNode = createElement(
             "div",
             node.props,
             node.type(node.props)
         );
-        rootElement = render(prerenderedNode)[0] as Element;
+        rootElement = render(prerenderedNode)[0];
     }
 
-    if (rootElement) {
+    if (rootElement as Element) {
+        const el = rootElement as Element;
         Object.keys(node.props).forEach((key) => {
             const val: unknown = node.props[key];
 
@@ -82,10 +102,9 @@ export function render(node: JsxNode): Node[] {
 
             // boolean props just set the attribute w/ no value
             if (val === true) {
-                rootElement.setAttribute(key, "");
+                el.setAttribute(key, "");
             } else if (String(val)) {
-                // TODO are we leaving out anything important?
-                rootElement.setAttribute(key, String(val));
+                el.setAttribute(key, String(val));
             }
         });
     }
@@ -95,7 +114,18 @@ export function render(node: JsxNode): Node[] {
         : Array.from(rootElement.childNodes);
 }
 
-const appendChildren = function (root: Element, child: jsx.ComponentChildren) {
+/**
+ * Appends all child components into the root node
+ * @param root The node to add all the components to
+ * @param child The children to append
+ */
+const appendChildren = function (root: Node, child: jsx.ComponentChildren) {
+    const rootEl = root as Element;
+
+    if (!rootEl) {
+        return;
+    }
+
     let el: Node[] = [];
 
     if (child === null || child === undefined) {
@@ -105,17 +135,16 @@ const appendChildren = function (root: Element, child: jsx.ComponentChildren) {
     if (typeof child !== "object") {
         el.push(document.createTextNode(child.toString()));
     } else if (child instanceof Array) {
-        child.forEach((c) => appendChildren(root, c));
+        child.forEach((c) => appendChildren(rootEl, c));
     } else if ("props" in child) {
-        // TODO
         el = render(child);
     } else {
-        throw "TODO Don't know what to do here... check this in tests later.";
+        throw `Unable to append invalid child: ` + child.toString();
     }
 
     if (!el.length) {
         return;
     }
 
-    root.append(...el);
+    rootEl.append(...el);
 };
