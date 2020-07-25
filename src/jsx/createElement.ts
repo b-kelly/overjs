@@ -45,6 +45,7 @@ export function createElement(
     };
 }
 
+// TODO document
 export function render(node: JsxNode): Node[] {
     let rootElement: Element;
 
@@ -72,6 +73,10 @@ export function render(node: JsxNode): Node[] {
         Object.keys(node.props).forEach((key) => {
             const val: unknown = node.props[key];
 
+            if (!val) {
+                return;
+            }
+
             if (key === "children") {
                 return;
             }
@@ -83,14 +88,14 @@ export function render(node: JsxNode): Node[] {
             // boolean props just set the attribute w/ no value
             if (val === true) {
                 rootElement.setAttribute(key, "");
-            } else if (typeof val === "string") {
+            } else if (String(val)) {
                 // TODO are we leaving out anything important?
-                rootElement.setAttribute(key, val);
+                rootElement.setAttribute(key, String(val));
             }
         });
     }
 
-    return node.type !== Fragment
+    return typeof node.type === "string"
         ? [rootElement]
         : Array.from(rootElement.childNodes);
 }
@@ -98,7 +103,7 @@ export function render(node: JsxNode): Node[] {
 const appendChildren = function (root: Element, child: jsx.ComponentChildren) {
     let el: Node[] = [];
 
-    if (!child) {
+    if (child === null || child === undefined) {
         return;
     }
 
