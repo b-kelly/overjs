@@ -1,6 +1,7 @@
 const path = require("path");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
-module.exports = (env, argv) => ({
+module.exports = (_, argv) => ({
     mode: argv.mode === "development" ? "development" : "production",
     devtool: argv.mode === "development" ? "inline-source-map" : false,
     entry: "./src/index.ts",
@@ -23,8 +24,9 @@ module.exports = (env, argv) => ({
     resolve: {
         extensions: [".tsx", ".ts", ".js"],
     },
+    plugins: [new CleanWebpackPlugin()],
     output: {
-        filename: "index.js",
+        filename: "[name].js",
         path: path.resolve(__dirname, "dist"),
         libraryTarget: "umd",
     },
