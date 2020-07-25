@@ -6,7 +6,7 @@ import { PopoverController, sample as PopoverSample } from "./popover";
 import { TestSampleController } from "./sample";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const types = new Map<string, string | ComponentConstructor<any>>([
+const types = new Map<string, string | ComponentConstructor>([
     [ModalController.name, ModalSample],
     [PopoverController.name, PopoverSample],
     [TestSampleController.name, TestSampleController],

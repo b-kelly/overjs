@@ -24,7 +24,7 @@ declare namespace jsx {
     type ComponentChildren = ComponentChild[] | ComponentChild;
 
     export namespace JSX {
-        type Element = JsxNode<never>;
+        type Element = JsxNode;
         type ElementClass = Component;
         interface ElementAttributesProperty {
             props: { [key: string]: unknown };

@@ -1,44 +1,43 @@
-type ComponentType<T extends Props> =
-    | ComponentConstructor<T>
-    | ((props: ComponentProps<Props>) => jsx.ComponentChildren);
+type ComponentType =
+    | ComponentConstructor
+    | ((props: ComponentProps) => jsx.ComponentChildren);
 
 // TODO document
-export interface ComponentConstructor<T extends Props> {
-    new (): Component<T>;
-    // TODO! Can't tell the difference between a class and a function without something like this...
+export interface ComponentConstructor {
+    new (): Component;
+    // TODO Can't tell the difference between a class constructor and a plain function
+    // without a property to key off of...
     isComponent: boolean;
 }
 
 type Props = { [key: string]: unknown };
-export type ComponentProps<T extends Props = Props> = T & {
+export type ComponentProps = Props & {
     readonly children?: jsx.ComponentChildren;
 };
 
 // TODO document
-export abstract class Component<T extends Props = Props> {
+export abstract class Component {
     static isComponent = true;
-    abstract render(props?: ComponentProps<T>): jsx.ComponentChildren;
+    abstract render(props?: ComponentProps): jsx.ComponentChildren;
 }
 
 // TODO document
-export function Fragment(props: ComponentProps<Props>): jsx.ComponentChildren {
+export function Fragment(props: ComponentProps): jsx.ComponentChildren {
     return props.children;
 }
 
-export interface JsxNode<T extends Props> {
-    type: string | ComponentType<T>;
-    props: T & { children: jsx.ComponentChildren };
+export interface JsxNode {
+    type: string | ComponentType;
+    props: Props & { children: jsx.ComponentChildren };
 }
 
 // TODO document
-export function createElement<T extends Props>(
-    type: string | ComponentType<T>,
-    props: T | null,
+export function createElement(
+    type: string | ComponentType,
+    props: Props | null,
     ...children: jsx.ComponentChildren[]
-): JsxNode<T> {
-    // @ts-ignore
-    const p: JsxNode<T>["props"] = props ?? {};
-    p.children = children;
+): JsxNode {
+    const p = props ? { ...props, children } : { children };
 
     return {
         type,
@@ -46,7 +45,7 @@ export function createElement<T extends Props>(
     };
 }
 
-export function render<T extends Props>(node: JsxNode<T>): Node[] {
+export function render(node: JsxNode): Node[] {
     let rootElement: Element;
 
     if (typeof node.type === "string") {
