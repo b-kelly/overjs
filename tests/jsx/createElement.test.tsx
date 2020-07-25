@@ -396,15 +396,17 @@ describe("render", () => {
             <>
                 <>
                     <></>
-                    <></>
+                    <>
+                        <></>
+                    </>
                 </>
                 <>
-                    <></>
                     <></>
                 </>
             </>,
             ``,
         ],
+        [<jsx.Fragment>test</jsx.Fragment>, `test`],
         [(null as unknown) as jsx.JSX.Element, ``],
         [
             <ClassComponent>
