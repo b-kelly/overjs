@@ -1,6 +1,5 @@
 import jsx from "../../src/jsx";
 import { JsxController } from "../../src/jsx/JsxController";
-import { Component } from "../../src/jsx/createElement";
 
 /** Showcases the use of both a Function component and a jsx Fragment */
 function FunctionComponent() {
@@ -8,7 +7,7 @@ function FunctionComponent() {
 }
 
 /** Showcases the use of a non-Controller class component */
-class NonControllerComponent extends Component {
+class NonControllerComponent extends jsx.Component {
     render(): jsx.ComponentChildren {
         return <>Definitely not a controller</>;
     }

@@ -1,16 +1,10 @@
 import { Controller } from "../core";
-import {
-    createElement,
-    Component,
-    render,
-    Fragment,
-    ComponentProps,
-} from "./createElement";
+import { createElement, Component, render, Fragment } from "./createElement";
 
 export abstract class JsxController extends Controller implements Component {
     static isComponent = true;
 
-    private renderedProps: ComponentProps = {};
+    private renderedProps: jsx.ComponentProps = {};
 
     constructor(); // no-param constructor for jsx rendering
     constructor(el: HTMLElement);
@@ -34,7 +28,7 @@ export abstract class JsxController extends Controller implements Component {
     }
 
     // TODO
-    render(props: ComponentProps): jsx.ComponentChildren {
+    render(props: jsx.ComponentProps): jsx.ComponentChildren {
         this.renderedProps = props;
         return createElement("div", {
             js: JsxController.getDomName(this["constructor"].name),
@@ -42,7 +36,9 @@ export abstract class JsxController extends Controller implements Component {
     }
 
     // TODO document
-    protected abstract content(props: ComponentProps): jsx.ComponentChildren;
+    protected abstract content(
+        props: jsx.ComponentProps
+    ): jsx.ComponentChildren;
 
     /**
      * Translates a controller/component name string to the name you'd use to reference it in the dom

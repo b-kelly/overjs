@@ -1,6 +1,6 @@
 type ComponentType =
     | ComponentConstructor
-    | ((props: ComponentProps) => jsx.ComponentChildren);
+    | ((props: jsx.ComponentProps) => jsx.ComponentChildren);
 
 // TODO document
 export interface ComponentConstructor {
@@ -10,31 +10,26 @@ export interface ComponentConstructor {
     isComponent: boolean;
 }
 
-type Props = { [key: string]: unknown };
-export type ComponentProps = Props & {
-    readonly children?: jsx.ComponentChildren;
-};
-
 // TODO document
 export abstract class Component {
     static isComponent = true;
-    abstract render(props?: ComponentProps): jsx.ComponentChildren;
+    abstract render(props?: jsx.ComponentProps): jsx.ComponentChildren;
 }
 
 // TODO document
-export function Fragment(props: ComponentProps): jsx.ComponentChildren {
+export function Fragment(props: jsx.ComponentProps): jsx.ComponentChildren {
     return props.children;
 }
 
 export interface JsxNode {
     type: string | ComponentType;
-    props: Props & { children: jsx.ComponentChildren };
+    props: jsx.Props & { children: jsx.ComponentChildren };
 }
 
 // TODO document
 export function createElement(
     type: string | ComponentType,
-    props: Props | null,
+    props: jsx.Props | null,
     ...children: jsx.ComponentChildren[]
 ): JsxNode {
     const p = props ? { ...props, children } : { children };

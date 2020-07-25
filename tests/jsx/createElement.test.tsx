@@ -1,15 +1,14 @@
 import jsx from "../../src/jsx";
-import { Component, ComponentProps } from "../../src/jsx/createElement";
 
-class ClassComponent extends Component {
+class ClassComponent extends jsx.Component {
     // TODO custom props props?: { p1?: boolean } = {};
 
-    render(props?: ComponentProps): jsx.ComponentChildren {
+    render(props?: jsx.ComponentProps): jsx.ComponentChildren {
         return <p>{props?.children}</p>;
     }
 }
 
-function FunctionComponent(props?: ComponentProps) {
+function FunctionComponent(props?: jsx.ComponentProps) {
     return <span {...props}>This is a test</span>;
 }
 

@@ -23,6 +23,11 @@ declare namespace jsx {
         | undefined;
     type ComponentChildren = ComponentChild[] | ComponentChild;
 
+    type Props = { [key: string]: unknown };
+    type ComponentProps = Props & {
+        readonly children?: jsx.ComponentChildren;
+    };
+
     export namespace JSX {
         type Element = JsxNode;
         type ElementClass = Component;
