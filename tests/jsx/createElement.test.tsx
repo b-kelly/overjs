@@ -3,13 +3,19 @@ import jsx from "../../src/jsx";
 class ClassComponent extends jsx.Component {
     // TODO custom props props?: { p1?: boolean } = {};
 
-    render(props?: jsx.ComponentProps): jsx.ComponentChildren {
+    render(props?: jsx.ComponentProps) {
         return <p>{props?.children}</p>;
     }
 }
 
 function FunctionComponent(props?: jsx.ComponentProps) {
     return <span {...props}>This is a test</span>;
+}
+
+class ClassComponent2 extends jsx.Component {
+    render() {
+        return [<div></div>, <div></div>];
+    }
 }
 
 describe("createElement", () => {
@@ -193,6 +199,20 @@ describe("render", () => {
         );
     });
 
+    it("should render className prop as class", () => {
+        const el = jsx.render(
+            jsx.createElement("div", {
+                className: "class1",
+            })
+        );
+
+        expect(el.length).toBe(1);
+        expect(el[0].nodeName).toBe("DIV");
+        expect((el[0] as HTMLDivElement).outerHTML).toBe(
+            `<div class="class1"></div>`
+        );
+    });
+
     it("should render a class type", () => {
         const el = jsx.render(
             jsx.createElement(
@@ -362,4 +382,58 @@ describe("render", () => {
         expect((els[0] as Element).outerHTML).toBe(`<div>test</div>`);
         expect((els[1] as Element).outerHTML).toBe(`<p>test2</p>`);
     });
+
+    it.each([
+        [
+            <ul>
+                {...["a", "b", "c"].map((i) => <li>{i}</li>)}
+                <li>last</li>
+            </ul>,
+            `<ul><li>a</li><li>b</li><li>c</li><li>last</li></ul>`,
+        ],
+        [<ClassComponent2 />, `<div></div><div></div>`],
+        [
+            <>
+                <>
+                    <></>
+                    <></>
+                </>
+                <>
+                    <></>
+                    <></>
+                </>
+            </>,
+            ``,
+        ],
+        [(null as unknown) as jsx.JSX.Element, ``],
+        [
+            <ClassComponent>
+                a{null}
+                {true}
+                {false}
+                {2}
+                {undefined}
+                {["b", "c"]}
+                {<ClassComponent />}
+            </ClassComponent>,
+            `<p>atruefalse2bc<p></p></p>`,
+        ],
+        [<div>{(x: number) => x + 1}</div>, `<div>(x) =&gt; x + 1</div>`],
+        [
+            <div>
+                {/* prettier-ignore */ function (x: number) {  return x + 1; }}
+            </div>,
+            `<div>function (x) { return x + 1; }</div>`,
+        ],
+        [<div>{{ test: 1 }}</div>, `<div>[object Object]</div>`],
+    ])(
+        "should render complicated jsx: %s",
+        (j: jsx.JSX.Element, rendered: string) => {
+            const el = jsx.render(j);
+            const frag = document.createElement("div");
+            frag.append(...el);
+
+            expect(frag.innerHTML).toBe(rendered);
+        }
+    );
 });

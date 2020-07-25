@@ -26,15 +26,17 @@ export abstract class Component {
  * Represents a JSX fragment which is a "transparent" element that is used like <>children</>;
  * This method is a valid target for tsconfig's compilerOptions.jsxFragmentFactory
  */
-export function Fragment(props: jsx.ComponentProps): jsx.ComponentChildren {
-    return props.children;
+export class Fragment extends Component {
+    render(props?: jsx.ComponentProps): jsx.ComponentChildren {
+        return props?.children;
+    }
 }
 
 /** Represents a "rendered" JSX element */
-export interface JsxNode {
+export type JsxNode = {
     type: ComponentType;
     props: jsx.Props & { children: jsx.ComponentChildren };
-}
+};
 
 /**
  * Creates a JsxNode from a valid JSX input;
@@ -63,9 +65,12 @@ export function createElement(
 export function render(node: JsxNode): Node[] {
     let rootElement: Node;
 
+    if (!node) {
+        return [];
+    }
+
     if (typeof node.type === "string") {
         rootElement = document.createElement(node.type);
-
         appendChildren(rootElement, node.props.children);
     } else if ("isComponent" in node.type) {
         const prerenderedNode = createElement(
@@ -139,7 +144,8 @@ const appendChildren = function (root: Node, child: jsx.ComponentChildren) {
     } else if ("props" in child) {
         el = render(child);
     } else {
-        throw `Unable to append invalid child: ` + child.toString();
+        /* object */
+        el.push(document.createTextNode(child.toString()));
     }
 
     if (!el.length) {
