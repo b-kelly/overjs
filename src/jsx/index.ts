@@ -1,5 +1,4 @@
 import { Component, createElement, Fragment, render } from "./createElement";
-import { JsxApplication } from "./JsxApplication";
 import { JsxController } from "./JsxController";
 
 // export as one default for use in .tsx files
@@ -9,16 +8,8 @@ export default {
     createElement,
     Fragment,
     render,
-    JsxApplication,
     JsxController,
 };
 
 // export individually as well in case a consumer wants to tree shake
-export {
-    Component,
-    createElement,
-    Fragment,
-    render,
-    JsxApplication,
-    JsxController,
-};
+export { Component, createElement, Fragment, render, JsxController };

@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import jsx from "../src/jsx";
 import { TestSampleController } from "./controllers/sample";
 import { ControllerListController } from "./controllers/controllerList";
 import { ModalController } from "./controllers/modal";
 import { PopoverController } from "./controllers/popover";
 
 import "@stackoverflow/stacks/dist/css/stacks.min.css";
+import { Application } from "../src";
 
-const app = new jsx.JsxApplication("controller-list");
+const app = new Application();
 app.register(TestSampleController);
 app.register(ControllerListController);
 app.register(ModalController);
