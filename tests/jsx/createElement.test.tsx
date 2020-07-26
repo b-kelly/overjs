@@ -426,6 +426,8 @@ describe("render", () => {
             `<div>function (x) { return x + 1; }</div>`,
         ],
         [<div>{{ test: 1 }}</div>, `<div>[object Object]</div>`],
+        [<div>{true && <span />}</div>, `<div><span></span></div>`],
+        [<div>{false && <span />}</div>, `<div></div>`],
     ])(
         "should render complicated jsx: %s",
         (j: jsx.JSX.Element, rendered: string) => {
