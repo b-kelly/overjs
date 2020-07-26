@@ -9,12 +9,13 @@ export interface ComponentConstructor {
     new (): Component;
     // TODO We can't tell the difference between a class constructor
     // and a plain function without a property to key off of...
-    isComponent: boolean;
+    defaultProps: jsx.Props;
 }
 
 /** Base class for creating a renderable JSX Class Component */
 export abstract class Component {
-    static isComponent = true;
+    static defaultProps: jsx.Props = {};
+
     /**
      * Creates the renderable content for this component
      * @param props The props added to the component at render
@@ -50,11 +51,35 @@ export function createElement(
     props: jsx.Props | null,
     ...children: jsx.ComponentChildren[]
 ): JsxNode {
-    const p = props ? { ...props, children } : { children };
+    const newProps: JsxNode["props"] = {
+        children,
+    };
+
+    // don't blindly pass props through, sanitize it first
+    if (props) {
+        for (const propName in props) {
+            if (
+                propName !== "children" &&
+                Object.hasOwnProperty.call(props, propName) //TODO necessary? alternatives?
+            ) {
+                newProps[propName] = props[propName];
+            }
+        }
+    }
+
+    // add in the values of "defaultProps"
+    if (type instanceof Function && "defaultProps" in type) {
+        const defaultProps = type.defaultProps;
+        for (const propName in defaultProps) {
+            if (newProps[propName] === undefined) {
+                newProps[propName] = defaultProps[propName];
+            }
+        }
+    }
 
     return {
         type,
-        props: p,
+        props: newProps,
     };
 }
 
@@ -72,7 +97,7 @@ export function render(node: JsxNode): Node[] {
     if (typeof node.type === "string") {
         rootElement = document.createElement(node.type);
         appendChildren(rootElement, node.props.children);
-    } else if ("isComponent" in node.type) {
+    } else if ("defaultProps" in node.type) {
         const prerenderedNode = createElement(
             "div",
             node.props,

@@ -2,7 +2,7 @@ import { Controller } from "../core";
 import { createElement, Component, render, Fragment } from "./createElement";
 
 export abstract class JsxController extends Controller implements Component {
-    static isComponent = true;
+    static defaultProps = {};
 
     private renderedProps: jsx.ComponentProps = {};
 
