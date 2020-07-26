@@ -165,9 +165,7 @@ describe("render", () => {
 
         expect(el.length).toBe(1);
         expect(el[0].nodeName).toBe("DIV");
-        expect((el[0] as HTMLDivElement).outerHTML).toBe(
-            `<div>child142truefalse</div>`
-        );
+        expect((el[0] as HTMLDivElement).outerHTML).toBe(`<div>child142</div>`);
 
         el = jsx.render(
             jsx.createElement(
@@ -418,7 +416,7 @@ describe("render", () => {
                 {["b", "c"]}
                 {<ClassComponent />}
             </ClassComponent>,
-            `<p>atruefalse2bc<p></p></p>`,
+            `<p>a2bc<p></p></p>`,
         ],
         [<div>{(x: number) => x + 1}</div>, `<div>(x) =&gt; x + 1</div>`],
         [

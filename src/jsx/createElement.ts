@@ -133,7 +133,7 @@ const appendChildren = function (root: Node, child: jsx.ComponentChildren) {
 
     let el: Node[] = [];
 
-    if (child === null || child === undefined) {
+    if (child === null || child === undefined || typeof child === "boolean") {
         return;
     }
 
