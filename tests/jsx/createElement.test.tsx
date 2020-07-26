@@ -1,14 +1,14 @@
 import jsx from "../../src/jsx";
 
-class ClassComponent extends jsx.Component {
-    // TODO custom props props?: { p1?: boolean } = {};
-
-    render(props?: jsx.ComponentProps) {
-        return <p>{props?.children}</p>;
+class ClassComponent extends jsx.Component<{ p1?: boolean }> {
+    render() {
+        return <p>{this.props?.children}</p>;
     }
 }
 
-function FunctionComponent(props?: jsx.ComponentProps) {
+function FunctionComponent(
+    props?: jsx.ComponentProps<{ test: string; p1: boolean }>
+) {
     return <span {...props}>This is a test</span>;
 }
 
@@ -242,9 +242,8 @@ describe("render", () => {
             jsx.createElement(
                 FunctionComponent,
                 {
-                    prop1: "test",
-                    prop2: null,
-                    prop3: false,
+                    test: "test",
+                    p1: false,
                 },
                 // adding children, but the component (as written) won't render them
                 {
@@ -260,7 +259,7 @@ describe("render", () => {
         expect(el.length).toBe(1);
         expect(el[0].nodeName).toBe("SPAN");
         expect((el[0] as HTMLSpanElement).outerHTML).toBe(
-            `<span prop1="test">This is a test</span>`
+            `<span test="test">This is a test</span>`
         );
     });
 
@@ -347,8 +346,7 @@ describe("render", () => {
 
         // class component
         el = jsx.render(
-            // TODO custom props <ClassComponent p1={true}>test1</ClassComponent>
-            <ClassComponent>
+            <ClassComponent p1={true}>
                 <a href="#">test link</a>
             </ClassComponent>
         )[0] as Element;

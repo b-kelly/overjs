@@ -1,42 +1,48 @@
 /** Represents the different types of valid components that can be passed to a jsxFactor */
-type ComponentType =
+type ComponentType<P> =
     | string
-    | ComponentConstructor
-    | ((props: jsx.ComponentProps) => jsx.ComponentChildren);
+    | ComponentConstructor<P>
+    | ((props: jsx.ComponentProps<P>) => jsx.ComponentChildren);
 
 /** Represents a constructable component */
-export interface ComponentConstructor {
-    new (): Component;
+export interface ComponentConstructor<P = Record<string, unknown>> {
+    new (props?: P): Component<P>;
     // TODO We can't tell the difference between a class constructor
     // and a plain function without a property to key off of...
-    defaultProps: jsx.Props;
+    defaultProps: Partial<P>;
 }
 
 /** Base class for creating a renderable JSX Class Component */
-export abstract class Component {
-    static defaultProps: jsx.Props = {};
+export abstract class Component<P = Record<string, unknown>> {
+    static defaultProps = {};
+
+    props: jsx.ComponentProps<P>;
+
+    constructor(props?: P) {
+        this.props = props ?? <P>{};
+    }
 
     /**
      * Creates the renderable content for this component
      * @param props The props added to the component at render
      */
-    abstract render(props?: jsx.ComponentProps): jsx.ComponentChildren;
+    abstract render(): jsx.ComponentChildren;
 }
 
 /**
  * Represents a JSX fragment which is a "transparent" element that is used like <>children</>;
  * This method is a valid target for tsconfig's compilerOptions.jsxFragmentFactory
  */
-export class Fragment extends Component {
-    render(props?: jsx.ComponentProps): jsx.ComponentChildren {
-        return props?.children;
+export class Fragment<P = unknown> extends Component<P> {
+    render(): jsx.ComponentChildren {
+        return this.props?.children;
     }
 }
 
 /** Represents a "rendered" JSX element */
-export type JsxNode = {
-    type: ComponentType;
-    props: jsx.Props & { children: jsx.ComponentChildren };
+export type JsxNode<P> = {
+    type: ComponentType<P>;
+    props: jsx.ComponentProps<P>;
 };
 
 /**
@@ -46,13 +52,13 @@ export type JsxNode = {
  * @param props The properties to add to the element
  * @param children The children of the element
  */
-export function createElement(
-    type: ComponentType,
-    props: jsx.Props | null,
+export function createElement<P>(
+    type: ComponentType<P>,
+    props: P | null,
     ...children: jsx.ComponentChildren[]
-): JsxNode {
-    const newProps: JsxNode["props"] = {
-        children,
+): JsxNode<P> {
+    const newProps = <JsxNode<P>["props"]>{
+        children: children as jsx.ComponentChildren,
     };
 
     // don't blindly pass props through, sanitize it first
@@ -71,8 +77,11 @@ export function createElement(
     if (type instanceof Function && "defaultProps" in type) {
         const defaultProps = type.defaultProps;
         for (const propName in defaultProps) {
-            if (newProps[propName] === undefined) {
-                newProps[propName] = defaultProps[propName];
+            const defaultProp = defaultProps[propName];
+            if (newProps[propName] === undefined && defaultProp !== undefined) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error TODO despite the undefined guard, it still complains about assigning an undefined value
+                newProps[propName] = defaultProp;
             }
         }
     }
@@ -87,7 +96,7 @@ export function createElement(
  * Renders a JsxNode into an array of DOM nodes
  * @param node The node to render
  */
-export function render(node: JsxNode): Node[] {
+export function render<P>(node: JsxNode<P>): Node[] {
     let rootElement: Node;
 
     if (!node) {
@@ -101,7 +110,7 @@ export function render(node: JsxNode): Node[] {
         const prerenderedNode = createElement(
             "div",
             node.props,
-            new node.type().render(node.props)
+            new node.type(node.props).render()
         );
         rootElement = render(prerenderedNode)[0];
     } else {
@@ -116,7 +125,9 @@ export function render(node: JsxNode): Node[] {
     if (rootElement as Element) {
         const el = rootElement as Element;
         Object.keys(node.props).forEach((key) => {
-            const val: unknown = node.props[key];
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error TODO ComponentProps is not-indexable
+            const val = node.props[key] as unknown;
 
             if (!val) {
                 return;

@@ -1,35 +1,33 @@
 import { Controller } from "../core";
 import { createElement, Component, render, Fragment } from "./createElement";
 
-export abstract class JsxController extends Controller implements Component {
+export abstract class JsxController<P = Record<string, unknown>>
+    extends Controller
+    implements Component<P> {
     static defaultProps = {};
 
-    private renderedProps: jsx.ComponentProps = {};
+    props: P;
 
-    constructor(); // no-param constructor for jsx rendering
+    constructor(props?: P); // props param constructor for jsx rendering
     constructor(el: HTMLElement);
-    constructor(el?: HTMLElement) {
+    constructor(el?: HTMLElement, props?: P) {
         // TODO
         super(el ?? document.createElement("div"));
+        this.props = props ?? <P>{};
     }
 
     // TODO document
     connect(): void {
         // render the content
         const content = render(
-            createElement(
-                Fragment,
-                this.renderedProps,
-                this.content(this.renderedProps)
-            )
+            createElement(Fragment, this.props, this.content(this.props))
         );
 
         this.baseElement.append(...content);
     }
 
     // TODO
-    render(props: jsx.ComponentProps): jsx.ComponentChildren {
-        this.renderedProps = props;
+    render(): jsx.ComponentChildren {
         return createElement("div", {
             js: JsxController.getDomName(this["constructor"].name),
         });
@@ -37,7 +35,7 @@ export abstract class JsxController extends Controller implements Component {
 
     // TODO document
     protected abstract content(
-        props: jsx.ComponentProps
+        props: jsx.ComponentProps<P>
     ): jsx.ComponentChildren;
 
     /**
