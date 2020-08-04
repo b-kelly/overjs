@@ -171,7 +171,7 @@ export abstract class Controller {
         return name
             .replace(/([a-z])([A-Z])/g, "$1-$2")
             .toLowerCase()
-            .replace(/-?controller$/, "")
+            .replace(/-?controller(\b|$)/, "")
             .trim();
     }
 }
