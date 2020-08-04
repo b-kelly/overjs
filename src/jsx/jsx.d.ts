@@ -8,9 +8,11 @@ declare namespace jsx {
      * Makes a Partial of the type, then subs out the "children" property for our version
      * e.g. `HTMLDivElement` has all of its properties made optional, then has the "children" property redefined
      */
-    type IntrinsicElement<T = never> = Omit<Partial<T>, "children"> & {
-        children?: ComponentChildren;
-    };
+    type IntrinsicElement<T = never> = Omit<
+        Partial<T>,
+        keyof ComponentAttributes
+    > &
+        ComponentAttributes;
 
     type ComponentChild =
         | JSX.Element
@@ -23,10 +25,14 @@ declare namespace jsx {
         | undefined;
     type ComponentChildren = ComponentChild[] | ComponentChild;
 
-    type ComponentProps<P> = Readonly<P> &
-        Readonly<{
-            children?: jsx.ComponentChildren;
-        }>;
+    type ComponentAttributes = {
+        children?: jsx.ComponentChildren;
+        dangerouslySetInnerHTML?: {
+            __html: string;
+        };
+    };
+
+    type ComponentProps<P> = Readonly<P> & Readonly<ComponentAttributes>;
 
     export namespace JSX {
         type Element = JsxNode<unknown>;

@@ -436,4 +436,20 @@ describe("render", () => {
             expect(frag.innerHTML).toBe(rendered);
         }
     );
+
+    it("should dangerouslySetInnerHtml", () => {
+        const prop = {
+            dangerouslySetInnerHTML: {
+                __html: "<span>XSS hazard!</span>",
+            },
+        };
+
+        const el = jsx.render(<div {...prop}></div>)[0];
+
+        expect(el.nodeName).toBe("DIV");
+        expect(el.childNodes).toHaveLength(1);
+        expect(el.firstChild?.nodeName).toBe("SPAN");
+        expect(el.firstChild?.childNodes).toHaveLength(1);
+        expect(el.firstChild?.firstChild?.textContent).toBe("XSS hazard!");
+    });
 });

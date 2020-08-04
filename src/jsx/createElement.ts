@@ -109,16 +109,12 @@ export function render<P>(node: JsxNode<P>): Node[] {
     } else if ("defaultProps" in node.type) {
         const prerenderedNode = createElement(
             "div",
-            node.props,
+            {},
             new node.type(node.props).render()
         );
         rootElement = render(prerenderedNode)[0];
     } else {
-        const prerenderedNode = createElement(
-            "div",
-            node.props,
-            node.type(node.props)
-        );
+        const prerenderedNode = createElement("div", {}, node.type(node.props));
         rootElement = render(prerenderedNode)[0];
     }
 
@@ -139,6 +135,15 @@ export function render<P>(node: JsxNode<P>): Node[] {
 
             if (key === "className") {
                 key = "class";
+            }
+
+            // if dangerouslySetInnerHTML.__html is set, then set the innerHTML... dangerously
+            if (
+                key === "dangerouslySetInnerHTML" &&
+                (val as { __html: string })
+            ) {
+                el.innerHTML = (val as { __html: string }).__html;
+                return;
             }
 
             // boolean props just set the attribute w/ no value
