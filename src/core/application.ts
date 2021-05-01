@@ -281,7 +281,7 @@ export class Application {
      * @param callback the function to call when the dom is ready
      */
     private domReady() {
-        return new Promise((resolve) => {
+        return new Promise<void>((resolve) => {
             if (document.readyState === "loading") {
                 document.addEventListener("DOMContentLoaded", () => resolve());
             } else {
