@@ -1,9 +1,15 @@
 import { Controller } from "../core";
-import { createElement, Component, render, Fragment } from "./createElement";
+import {
+    createElement,
+    Component,
+    renderElements,
+    Fragment,
+} from "./createElement";
 
 export abstract class JsxController<P = Record<string, unknown>>
     extends Controller
-    implements Component<P> {
+    implements Component<P>
+{
     static defaultProps = {};
     /**
      * The "stored" props since jsx render and controller connection are completely
@@ -52,7 +58,7 @@ export abstract class JsxController<P = Record<string, unknown>>
         this.props = props as jsx.ComponentProps<P>;
 
         // render the content
-        const content = render(
+        const content = renderElements(
             createElement(Fragment, this.props, this.content(this.props))
         );
 
@@ -80,12 +86,12 @@ export abstract class JsxController<P = Record<string, unknown>>
 
     /**
      * Translates a controller/component name string to the name you'd use to reference it in the dom
-     * e.g. "TestSampleController", "TestSampleComponent", "TestSampleComponentController", "TestSample" all become "test-sample"
+     * e.g. "TestSampleController", "TestSampleComponent", "TestSampleControllerComponent", "TestSample" all become "test-sample"
      * @param name
      */
     public static getDomName(name: string): string {
         return Controller.getDomName(name)
-            .replace(/-?component(\b|$)/, "")
+            .replace(/(-?controller)?-?component(\b|$)/, "")
             .trim();
     }
 }

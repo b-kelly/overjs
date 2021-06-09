@@ -96,7 +96,7 @@ export function createElement<P>(
  * Renders a JsxNode into an array of DOM nodes
  * @param node The node to render
  */
-export function render<P>(node: JsxNode<P>): Node[] {
+export function renderElements<P>(node: JsxNode<P>): Node[] {
     let rootElement: Node;
 
     if (!node) {
@@ -105,17 +105,17 @@ export function render<P>(node: JsxNode<P>): Node[] {
 
     if (typeof node.type === "string") {
         rootElement = document.createElement(node.type);
-        appendChildren(rootElement, node.props.children);
+        render(node.props.children, rootElement);
     } else if ("defaultProps" in node.type) {
         const prerenderedNode = createElement(
             "div",
             {},
             new node.type(node.props).render()
         );
-        rootElement = render(prerenderedNode)[0];
+        rootElement = renderElements(prerenderedNode)[0];
     } else {
         const prerenderedNode = createElement("div", {}, node.type(node.props));
-        rootElement = render(prerenderedNode)[0];
+        rootElement = renderElements(prerenderedNode)[0];
     }
 
     if (rootElement as Element) {
@@ -162,11 +162,11 @@ export function render<P>(node: JsxNode<P>): Node[] {
 
 /**
  * Appends all child components into the root node
- * @param root The node to add all the components to
  * @param child The children to append
+ * @param container The node to add all the components to
  */
-const appendChildren = function (root: Node, child: jsx.ComponentChildren) {
-    const rootEl = root as Element;
+const render = function (child: jsx.ComponentChildren, container: Node) {
+    const rootEl = container as Element;
 
     if (!rootEl) {
         return;
@@ -181,9 +181,9 @@ const appendChildren = function (root: Node, child: jsx.ComponentChildren) {
     if (typeof child !== "object") {
         el.push(document.createTextNode(child.toString()));
     } else if (child instanceof Array) {
-        child.forEach((c) => appendChildren(rootEl, c));
+        child.forEach((c) => render(c, rootEl));
     } else if ("props" in child) {
-        el = render(child);
+        el = renderElements(child);
     } else {
         /* object */
         el.push(document.createTextNode(child.toString()));
