@@ -164,14 +164,14 @@ export abstract class Controller {
 
     /**
      * Translates a controller name string to the name you'd use to reference it in the dom
-     * e.g. "TestSampleController" and "TestSample" both become "test-sample"
+     * e.g. "TestSampleController" and "TestSample" both become "test-sample", while ControllerListController just becomes "controller-list"
      * @param name
      */
     public static getDomName(name: string): string {
         return name
             .replace(/([a-z])([A-Z])/g, "$1-$2")
             .toLowerCase()
-            .replace(/-?controller(\b|$)/, "")
+            .replace(/-?controller$/, "")
             .trim();
     }
 }
