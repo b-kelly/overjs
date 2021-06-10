@@ -125,33 +125,7 @@ export function renderJsxNode<P>(node: JsxNode<P>): Node[] {
             // @ts-expect-error TODO ComponentProps is not-indexable
             const val = node.props[key] as unknown;
 
-            if (!val) {
-                return;
-            }
-
-            if (key === "children") {
-                return;
-            }
-
-            if (key === "className") {
-                key = "class";
-            }
-
-            // if dangerouslySetInnerHTML.__html is set, then set the innerHTML... dangerously
-            if (
-                key === "dangerouslySetInnerHTML" &&
-                (val as { __html: string })
-            ) {
-                el.innerHTML = (val as { __html: string }).__html;
-                return;
-            }
-
-            // boolean props just set the attribute w/ no value
-            if (val === true) {
-                el.setAttribute(key, "");
-            } else if (String(val)) {
-                el.setAttribute(key, String(val));
-            }
+            setProperty(el, key, val);
         });
     }
 
@@ -195,3 +169,48 @@ export const render = function (child: jsx.ComponentChildren, container: Node) {
 
     rootEl.append(...el);
 };
+
+/**
+ * Sanitizes and then sets a property onto the passed element
+ * @param el the element to set the property onto
+ * @param key the name of the property to set
+ * @param val the value of the property to set
+ */
+function setProperty(el: Element, key: string, val: unknown): void {
+    if (key === "style") {
+        // TODO
+        return;
+    }
+
+    if (key === "children") {
+        return;
+    }
+
+    // if dangerouslySetInnerHTML.__html is set, then set the innerHTML... dangerously
+    if (key === "dangerouslySetInnerHTML" && (val as { __html: string })) {
+        el.innerHTML = (val as { __html: string }).__html;
+        return;
+    }
+
+    if (key.startsWith("on")) {
+        const event = key.slice(2).toLowerCase();
+        el.addEventListener(event, val as EventListenerOrEventListenerObject);
+        return;
+    }
+
+    // there's nothing left for us to do with functions at this point, so return
+    if (typeof val === "function") {
+        return;
+    }
+
+    // if this property exists on the element, set it directly
+    if (key in el) {
+        try {
+            // @ts-expect-error Element can't be "indexed", but we're going to set the property anyways
+            el[key] = val ? val : "";
+        } catch {}
+    } else if (val) {
+        // otherwise, use setAttribute to set the string representation
+        el.setAttribute(key, val === true ? "" : String(val));
+    }
+}
