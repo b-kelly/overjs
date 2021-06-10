@@ -12,15 +12,9 @@ export default {
     Component,
     createElement,
     Fragment,
-    render: renderElements,
+    renderElements,
     JsxController,
 };
 
 // export individually as well in case a consumer wants to tree shake
-export {
-    Component,
-    createElement,
-    Fragment,
-    renderElements as render,
-    JsxController,
-};
+export { Component, createElement, Fragment, renderElements, JsxController };

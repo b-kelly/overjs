@@ -54,7 +54,9 @@ export class ControllerListController extends jsx.JsxController {
         if (typeof mapping === "string") {
             container.innerHTML = mapping;
         } else {
-            const renderedElement = jsx.render(jsx.createElement(mapping, {}));
+            const renderedElement = jsx.renderElements(
+                jsx.createElement(mapping, {})
+            );
             container.append(...renderedElement);
         }
 

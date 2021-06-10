@@ -29,7 +29,7 @@ describe("JsxController", () => {
         app.register(TestControllerComponent);
         await app.start();
 
-        const rendered = jsx.render(renderControllerComponent())[0];
+        const rendered = jsx.renderElements(renderControllerComponent())[0];
         document.body.appendChild(rendered);
 
         expect(document.body.children).toHaveLength(1);
