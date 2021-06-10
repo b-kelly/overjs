@@ -1,10 +1,5 @@
 import { Controller } from "../core";
-import {
-    createElement,
-    Component,
-    renderElements,
-    Fragment,
-} from "./createElement";
+import { createElement, Component, render, Fragment } from "./createElement";
 
 export abstract class JsxController<P = Record<string, unknown>>
     extends Controller
@@ -58,11 +53,10 @@ export abstract class JsxController<P = Record<string, unknown>>
         this.props = props as jsx.ComponentProps<P>;
 
         // render the content
-        const content = renderElements(
-            createElement(Fragment, this.props, this.content(this.props))
+        render(
+            createElement(Fragment, this.props, this.content(this.props)),
+            this.baseElement
         );
-
-        this.baseElement.append(...content);
     }
 
     // TODO

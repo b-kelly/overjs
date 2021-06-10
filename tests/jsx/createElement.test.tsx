@@ -1,4 +1,5 @@
 import jsx from "../../src/jsx";
+import { renderJsxNode } from "../../src/jsx/createElement";
 
 class ClassComponent extends jsx.Component<{ p1?: boolean }> {
     render() {
@@ -124,7 +125,7 @@ describe("createElement", () => {
 
 describe("renderElements", () => {
     it("should renderElements string types, no props, no children", () => {
-        const el = jsx.renderElements(jsx.createElement("div", null));
+        const el = renderJsxNode(jsx.createElement("div", null));
 
         expect(el.length).toBe(1);
         expect(el[0].nodeName).toBe("DIV");
@@ -132,7 +133,7 @@ describe("renderElements", () => {
     });
 
     it("should renderElements string types, with props, no children", () => {
-        const el = jsx.renderElements(
+        const el = renderJsxNode(
             jsx.createElement("div", {
                 prop1: "value1",
                 prop2: 42,
@@ -150,7 +151,7 @@ describe("renderElements", () => {
 
     it("should renderElements string types with various child types", () => {
         // primitive types
-        let el = jsx.renderElements(
+        let el = renderJsxNode(
             jsx.createElement(
                 "div",
                 null,
@@ -167,7 +168,7 @@ describe("renderElements", () => {
         expect(el[0].nodeName).toBe("DIV");
         expect((el[0] as HTMLDivElement).outerHTML).toBe(`<div>child142</div>`);
 
-        el = jsx.renderElements(
+        el = renderJsxNode(
             jsx.createElement(
                 "div",
                 null,
@@ -198,7 +199,7 @@ describe("renderElements", () => {
     });
 
     it("should renderElements className prop as class", () => {
-        const el = jsx.renderElements(
+        const el = renderJsxNode(
             jsx.createElement("div", {
                 className: "class1",
             })
@@ -212,7 +213,7 @@ describe("renderElements", () => {
     });
 
     it("should renderElements a class type", () => {
-        const el = jsx.renderElements(
+        const el = renderJsxNode(
             jsx.createElement(
                 ClassComponent,
                 null,
@@ -238,7 +239,7 @@ describe("renderElements", () => {
     });
 
     it("should renderElements a function type", () => {
-        const el = jsx.renderElements(
+        const el = renderJsxNode(
             jsx.createElement(
                 FunctionComponent,
                 {
@@ -264,7 +265,7 @@ describe("renderElements", () => {
     });
 
     it("should renderElements an invalid string type", () => {
-        const el = jsx.renderElements(jsx.createElement("fake", null));
+        const el = renderJsxNode(jsx.createElement("fake", null));
 
         expect(el.length).toBe(1);
         expect(el[0].nodeName).toBe("FAKE");
@@ -272,13 +273,13 @@ describe("renderElements", () => {
     });
 
     it("should renderElements with a Fragment root and no children", () => {
-        const el = jsx.renderElements(jsx.createElement(jsx.Fragment, null));
+        const el = renderJsxNode(jsx.createElement(jsx.Fragment, null));
 
         expect(el.length).toBe(0);
     });
 
     it("should renderElements with a Fragment root and non-fragment children", () => {
-        const el = jsx.renderElements(
+        const el = renderJsxNode(
             jsx.createElement(
                 jsx.Fragment,
                 {
@@ -302,7 +303,7 @@ describe("renderElements", () => {
     });
 
     it("should renderElements with a non-Fragment root and Fragment child", () => {
-        const el = jsx.renderElements(
+        const el = renderJsxNode(
             jsx.createElement("div", null, {
                 type: jsx.Fragment,
                 props: {
@@ -326,7 +327,7 @@ describe("renderElements", () => {
     });
 
     it("should renderElements with a Fragment root and immediate Fragment child", () => {
-        const el = jsx.renderElements(
+        const el = renderJsxNode(
             jsx.createElement(jsx.Fragment, null, {
                 type: jsx.Fragment,
                 props: {
@@ -341,13 +342,11 @@ describe("renderElements", () => {
 
     it("should renderElements straight jsx", () => {
         // intrinsic element
-        let el = jsx.renderElements(
-            <div className="test">test1</div>
-        )[0] as Element;
+        let el = renderJsxNode(<div className="test">test1</div>)[0] as Element;
         expect(el.outerHTML).toBe(`<div class="test">test1</div>`);
 
         // class component
-        el = jsx.renderElements(
+        el = renderJsxNode(
             <ClassComponent p1={true}>
                 <a href="#">test link</a>
             </ClassComponent>
@@ -356,7 +355,7 @@ describe("renderElements", () => {
 
         // function component
         // note: we're adding a child, but the component (as written) won't renderElements it
-        el = jsx.renderElements(
+        el = renderJsxNode(
             <FunctionComponent test="test" p1={true}>
                 test1
             </FunctionComponent>
@@ -366,11 +365,11 @@ describe("renderElements", () => {
         );
 
         // fragment (no elements, only nodes)
-        const node = jsx.renderElements(<>test1</>)[0];
+        const node = renderJsxNode(<>test1</>)[0];
         expect(node.textContent).toBe(`test1`);
 
         // fragment (multiple elements)
-        const els = jsx.renderElements(
+        const els = renderJsxNode(
             <>
                 <div>test</div>
                 <p>test2</p>
@@ -431,7 +430,7 @@ describe("renderElements", () => {
     ])(
         "should renderElements complicated jsx: %s",
         (j: jsx.JSX.Element, renderElementsed: string) => {
-            const el = jsx.renderElements(j);
+            const el = renderJsxNode(j);
             const frag = document.createElement("div");
             frag.append(...el);
 
@@ -446,7 +445,7 @@ describe("renderElements", () => {
             },
         };
 
-        const el = jsx.renderElements(<div {...prop}></div>)[0];
+        const el = renderJsxNode(<div {...prop}></div>)[0];
 
         expect(el.nodeName).toBe("DIV");
         expect(el.childNodes).toHaveLength(1);

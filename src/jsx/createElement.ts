@@ -96,7 +96,7 @@ export function createElement<P>(
  * Renders a JsxNode into an array of DOM nodes
  * @param node The node to render
  */
-export function renderElements<P>(node: JsxNode<P>): Node[] {
+export function renderJsxNode<P>(node: JsxNode<P>): Node[] {
     let rootElement: Node;
 
     if (!node) {
@@ -112,10 +112,10 @@ export function renderElements<P>(node: JsxNode<P>): Node[] {
             {},
             new node.type(node.props).render()
         );
-        rootElement = renderElements(prerenderedNode)[0];
+        rootElement = renderJsxNode(prerenderedNode)[0];
     } else {
         const prerenderedNode = createElement("div", {}, node.type(node.props));
-        rootElement = renderElements(prerenderedNode)[0];
+        rootElement = renderJsxNode(prerenderedNode)[0];
     }
 
     if (rootElement as Element) {
@@ -165,7 +165,7 @@ export function renderElements<P>(node: JsxNode<P>): Node[] {
  * @param child The children to append
  * @param container The node to add all the components to
  */
-const render = function (child: jsx.ComponentChildren, container: Node) {
+export const render = function (child: jsx.ComponentChildren, container: Node) {
     const rootEl = container as Element;
 
     if (!rootEl) {
@@ -183,7 +183,7 @@ const render = function (child: jsx.ComponentChildren, container: Node) {
     } else if (child instanceof Array) {
         child.forEach((c) => render(c, rootEl));
     } else if ("props" in child) {
-        el = renderElements(child);
+        el = renderJsxNode(child);
     } else {
         /* object */
         el.push(document.createTextNode(child.toString()));
